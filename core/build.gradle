@@ -1,0 +1,13 @@
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+eclipse.project.name = appName + '-core'
+
+dependencies {
+	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+    api "info.picocli:picocli:4.6.2"
+    annotationProcessor "info.picocli:picocli-codegen:4.6.2"
+}
+
+
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+}

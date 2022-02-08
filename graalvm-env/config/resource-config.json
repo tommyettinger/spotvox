@@ -1,0 +1,5 @@
+{
+  "resources":{
+  "includes":[{"pattern":"\\Qgdx64.dll\\E"}]},
+  "bundles":[]
+}

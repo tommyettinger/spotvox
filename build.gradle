@@ -1,0 +1,38 @@
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		google()
+		gradlePluginPortal()
+		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+	}
+	dependencies {
+
+	}
+}
+
+allprojects {
+	apply plugin: 'eclipse'
+	apply plugin: 'idea'
+}
+
+configure(subprojects) {
+	apply plugin: 'java-library'
+	sourceCompatibility = 1.8
+	compileJava {
+		options.incremental = true
+	}
+}
+
+subprojects {
+	version = '0.0.1'
+	ext.appName = 'spotvox'
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+		maven { url 'https://jitpack.io' }
+	}
+}
+
+eclipse.project.name = 'spotvox' + '-parent'
