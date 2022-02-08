@@ -31,6 +31,9 @@ public class Renderer {
     }
     public Renderer(final int size) {
         this.size = size;
+    }
+
+    public void init(){
         final int w = size * 4 + 4, h = size * 5 + 4;
         pixmap = new Pixmap(w>>>shrink, h>>>shrink, Pixmap.Format.RGBA8888);
         render =   new int[w][h];
@@ -43,7 +46,6 @@ public class Renderer {
         colorL = fill(-1f, w, h);
         colorA = fill(-1f, w, h);
         colorB = fill(-1f, w, h);
-//        remade = new byte[size << 1][size << 1][size << 1];
     }
     public static float limitToGamut(float L, float A, float B, float alpha) {
         L = Math.min(Math.max(L, 0f), 1f);

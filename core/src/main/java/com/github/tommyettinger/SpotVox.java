@@ -29,6 +29,7 @@ public class SpotVox extends ApplicationAdapter {
     @Override
     public void create() {
         long startTime = TimeUtils.millis();
+        renderer.init();
         png = new PixmapIO.PNG();
         png.setCompression(2); // we are likely to compress these with something better, like oxipng.
         Pixmap pixmap;
