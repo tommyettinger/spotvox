@@ -3,10 +3,11 @@ package com.github.tommyettinger.headless;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
-import com.github.tommyettinger.Renderer;
-import com.github.tommyettinger.SpotVox;
+import com.github.tommyettinger.*;
 import picocli.CommandLine;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.1",
@@ -14,46 +15,17 @@ import java.util.concurrent.Callable;
 		mixinStandardHelpOptions = true)
 public class HeadlessLauncher implements Callable<Integer> {
 
-	public Renderer renderer = new Renderer();
-	
-	@CommandLine.Option(names = {"-O", "--octaves"}, description = "The amount of octaves to use; more increases detail.", defaultValue = "3")
-	public int octaves = 3;
+	@CommandLine.Option(names = {"-s", "--size"}, description = "The width, height, and depth of the space to place the model into, in voxels.", defaultValue = "256")
+	public int size = 256;
 
-	@CommandLine.Option(names = {"-W", "--width"}, description = "The width of the resulting image.", defaultValue = "512")
-	public int width = 512;
+	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: heavy, light, partial, none.", defaultValue = "light")
+	public String edge = "light";
 
-	@CommandLine.Option(names = {"-H", "--height"}, description = "The height of the resulting image.", defaultValue = "512")
-	public int height = 512;
+	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this doesn't use smoothing.", defaultValue = "0")
+	public float multiple = 0f;
 
-	@CommandLine.Option(names = {"-t", "--type"}, description = "The type of noise to generate; one of: simplex, perlin, cubic, foam, honey, mutant, value, white, cellular.", defaultValue = "simplex")
-	public String type = "simplex";
-
-	@CommandLine.Option(names = {"-F", "--fractal"}, description = "The fractal mode to use for most noise types; one of: fbm, billow, ridged.", defaultValue = "fbm")
-	public String fractal = "fbm";
-
-	@CommandLine.Option(names = {"-c", "--cellular"}, description = "The cellular return type to use for the cellular type; one of: value, lookup, distance, distance2, distance2add, distance2mul, distance2div.", defaultValue = "value")
-	public String cellular = "value";
-
-	@CommandLine.Option(names = {"-S", "--sharpness"}, description = "The sharpness multiplier for foam and mutant noise; higher than one means more extreme.", defaultValue = "1")
-	public float sharpness = 1f;
-
-	@CommandLine.Option(names = {"-C", "--curvature"}, description = "How steep the transition should be from black to white; must be positive.", defaultValue = "1")
-	public float curvature = 1f;
-
-	@CommandLine.Option(names = {"-M", "--middle"}, description = "When curvature is not 1.0, this determines where the noise starts to turn its curve; must be between 0 and 1, inclusive.", defaultValue = "0.5")
-	public float middle = 0.5f;
-
-	@CommandLine.Option(names = {"-m", "--mutation"}, description = "The extra 'spatial' value used by mutant noise; can be any float.", defaultValue = "0")
-	public float mutation = 0f;
-
-	@CommandLine.Option(names = {"-o", "--output"}, description = "The name and/or path for the output file.", defaultValue = "noise.png")
-	public String output = "noise.png";
-
-	@CommandLine.Option(names = {"-d", "--debug"}, description = "If true, draws higher-than-1 noise as red, and lower-than-negative-1 as blue.", defaultValue = "false")
-	public boolean debug = false;
-
-	@CommandLine.Option(names = {"-e", "--equalize"}, description = "If true, makes each grayscale value approximately as frequent as all other values.", defaultValue = "false")
-	public boolean equalize = false;
+	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "vox/Tree.vox")
+	public String input = "vox/Tree.vox";
 
 	public static void main(String[] args) {
 		int exitCode = new picocli.CommandLine(new HeadlessLauncher()).execute(args);
@@ -64,17 +36,35 @@ public class HeadlessLauncher implements Callable<Integer> {
 	public Integer call() {
 		HeadlessApplicationConfiguration configuration = new HeadlessApplicationConfiguration();
 		configuration.updatesPerSecond = -1;
-		// set all fields on Renderer here.
-		// that might be a lot.
-		new HeadlessApplication(new SpotVox(renderer), configuration){
-			{
-				try {
-					mainLoopThread.join(60000L);
-				} catch (InterruptedException e) {
-					System.out.println("Interrupted!");
-				}
+		try {
+			//// loads a file by its full path, which we get via a command-line arg
+			byte[][][] voxels = VoxIO.readVox(new LittleEndianDataInputStream(new FileInputStream(input)));
+			if(voxels == null) {
+				System.out.println("Unable to read input file.");
+				return -1;
 			}
-		};
+			voxels = Tools3D.scaleAndSoak(voxels);
+//            voxels = Tools3D.soak(voxels);
+
+			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
+			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
+			Renderer renderer = new Renderer(voxels.length);
+			renderer.palette(VoxIO.lastPalette);
+			renderer.saturation(0f);
+			new HeadlessApplication(new SpotVox(renderer), configuration){
+				{
+					try {
+						mainLoopThread.join(60000L);
+					} catch (InterruptedException e) {
+						System.out.println("Interrupted!");
+					}
+				}
+			};
+
+		} catch (FileNotFoundException e) {
+			System.out.println("Specified file not found.");
+			return -1;
+		}
 		return 0;
 	}
 }

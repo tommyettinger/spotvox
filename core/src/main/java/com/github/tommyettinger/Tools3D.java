@@ -12,9 +12,6 @@ import static com.github.yellowstonegames.core.Hasher.*;
  * Created by Tommy Ettinger on 11/2/2017.
  */
 public class Tools3D {
-
-    public static Stuff[] STUFFS = Stuff.STUFFS_B;
-
     public static byte[][][] deepCopy(byte[][][] voxels)
     {
         int xs, ys, zs;
@@ -650,12 +647,12 @@ public class Tools3D {
                 x >= voxels.length || y >= voxels[x].length || z >= voxels[x][y].length ||
                 voxels[x][y][z] == 0)
             return 0;
-        if(x <= 0 || (v = voxels[x-1][y][z] & 255) == 0 || STUFFS[v % STUFFS.length].material.getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 1;
-        if(y <= 0 || (v = voxels[x][y-1][z] & 255) == 0 || STUFFS[v % STUFFS.length].material.getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 2;
-        if(z <= 0 || (v = voxels[x][y][z-1] & 255) == 0 || STUFFS[v % STUFFS.length].material.getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 3;
-        if(x >= voxels.length - 1       || (v = voxels[x+1][y][z] & 255) == 0 || STUFFS[v % STUFFS.length].material.getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 4;
-        if(y >= voxels[x].length - 1    || (v = voxels[x][y+1][z] & 255) == 0 || STUFFS[v % STUFFS.length].material.getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 5;
-        if(z >= voxels[x][y].length - 1 || (v = voxels[x][y][z+1] & 255) == 0 || STUFFS[v % STUFFS.length].material.getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 6;
+        if(x <= 0 || (v = voxels[x-1][y][z] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 1;
+        if(y <= 0 || (v = voxels[x][y-1][z] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 2;
+        if(z <= 0 || (v = voxels[x][y][z-1] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 3;
+        if(x >= voxels.length - 1       || (v = voxels[x+1][y][z] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 4;
+        if(y >= voxels[x].length - 1    || (v = voxels[x][y+1][z] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 5;
+        if(z >= voxels[x][y].length - 1 || (v = voxels[x][y][z+1] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 6;
         return -1;
     }
 
