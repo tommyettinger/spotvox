@@ -16,16 +16,17 @@ public class SpotVox extends ApplicationAdapter {
     public String name;
     public byte[][][] voxels;
     private PixmapIO.PNG png;
-    int multiple;
-    int outline;
+    public int multiple;
+    public int outline;
+    public int size;
 
     public SpotVox() {
         renderer = new Renderer();
     }
-    public SpotVox(String name, Renderer r, byte[][][] voxels, int multiple, String edge) {
-        renderer = r;
+    public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge) {
         this.name = name;
         this.voxels = voxels;
+        this.size = size;
         this.multiple = multiple == 0 ? 1 : multiple;
         switch (edge) {
             case "none":
@@ -45,6 +46,8 @@ public class SpotVox extends ApplicationAdapter {
     @Override
     public void create() {
         long startTime = TimeUtils.millis();
+        renderer = new Renderer(size);
+        renderer.palette(VoxIO.lastPalette);
         renderer.init();
         png = new PixmapIO.PNG();
         png.setCompression(2); // we are likely to compress these with something better, like oxipng.
@@ -61,7 +64,12 @@ public class SpotVox extends ApplicationAdapter {
                 }
             }
             if(m + 1 < multiple)
+            {
                 voxels = smoothing ? Tools3D.smoothScale(voxels) : Tools3D.scaleAndSoak(voxels);
+                renderer = new Renderer(size *= 2);
+                renderer.palette(VoxIO.lastPalette);
+                renderer.init();
+            }
         }
         System.out.println("Finished in " + TimeUtils.timeSinceMillis(startTime) * 0.001 + " seconds.");
         Gdx.app.exit();

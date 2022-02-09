@@ -24,7 +24,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this doesn't use smoothing.", defaultValue = "3")
 	public int multiple = 3;
 
-	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "../vox/Lomuk.vox")
+	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "../vox/Truck.vox")
 	public String input = "vox/Tree.vox";
 
 	public static void main(String[] args) {
@@ -49,10 +49,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
-			Renderer renderer = new Renderer(size);
-			renderer.palette(VoxIO.lastPalette);
-			renderer.saturation(0f);
-			new HeadlessApplication(new SpotVox(input, renderer, voxels, multiple, edge), configuration){
+			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge), configuration){
 				{
 					try {
 						mainLoopThread.join(60000L);

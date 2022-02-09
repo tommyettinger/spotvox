@@ -348,7 +348,7 @@ public class Renderer {
             for (int y = ySize; y >= 0; y--) {
                 if (colorA[x][y] >= 0f) {
                     pixmap.drawPixel(x >>> shrink, y >>> shrink, render[x][y] = ColorTools.toRGBA8888(ColorTools.oklab(
-                            Math.min(Math.max(colorL[x][y] * 1.2f - 0.125f + midShading[x][y], 0f), 1f),
+                            Math.min(Math.max(colorL[x][y] - 0.1f + midShading[x][y], 0f), 1f),
                                                         (colorA[x][y] - 0.5f) * neutral + 0.5f,
                             (colorB[x][y] - 0.5f) * neutral + 0.5f, 1f)));
                 }
