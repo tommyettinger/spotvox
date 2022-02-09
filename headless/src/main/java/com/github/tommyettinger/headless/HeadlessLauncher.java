@@ -15,14 +15,14 @@ import java.util.concurrent.Callable;
 		mixinStandardHelpOptions = true)
 public class HeadlessLauncher implements Callable<Integer> {
 
-	@CommandLine.Option(names = {"-s", "--size"}, description = "The width, height, and depth of the space to place the model into, in voxels.", defaultValue = "256")
-	public int size = 256;
+	@CommandLine.Option(names = {"-s", "--size"}, description = "The width, height, and depth of the space to place the model into, in voxels.", defaultValue = "-1")
+	public int size = -1;
 
 	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: heavy, light, partial, none.", defaultValue = "light")
 	public String edge = "light";
 
-	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this doesn't use smoothing.", defaultValue = "0")
-	public float multiple = 0f;
+	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this doesn't use smoothing.", defaultValue = "3")
+	public int multiple = 3;
 
 	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "../vox/Lomuk.vox")
 	public String input = "vox/Tree.vox";
@@ -43,15 +43,16 @@ public class HeadlessLauncher implements Callable<Integer> {
 				System.out.println("Unable to read input file.");
 				return -1;
 			}
-			voxels = Tools3D.scaleAndSoak(voxels);
-//            voxels = Tools3D.soak(voxels);
+			if(size < 0) size = voxels.length;
+//			voxels = Tools3D.scaleAndSoak(voxels);
+            voxels = Tools3D.soak(voxels);
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
-			Renderer renderer = new Renderer(voxels.length);
+			Renderer renderer = new Renderer(size);
 			renderer.palette(VoxIO.lastPalette);
 			renderer.saturation(0f);
-			new HeadlessApplication(new SpotVox(input, renderer, voxels), configuration){
+			new HeadlessApplication(new SpotVox(input, renderer, voxels, multiple, edge), configuration){
 				{
 					try {
 						mainLoopThread.join(60000L);
