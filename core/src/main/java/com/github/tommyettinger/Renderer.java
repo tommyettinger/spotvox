@@ -185,7 +185,7 @@ public class Renderer {
         return this;
     }
     
-    public void splat(float xPos, float yPos, float zPos, int vx, int vy, int vz, byte voxel, int frame) {
+    public void splat(float xPos, float yPos, float zPos, int vx, int vy, int vz, byte voxel) {
         if(xPos <= -1f || yPos <= -1f || zPos <= -1f
                 || xPos >= size * 2 || yPos >= size * 2 || zPos >= size * 2)
             return;
@@ -195,8 +195,8 @@ public class Renderer {
                 depth = (int)(0.5f + (xPos + yPos) * 2 + zPos * 3);
         boolean drawn = false;
         final VoxMaterial m = materialMap.get(voxel & 255);
-        if(Tools3D.randomizePointRare(vx, vy, vz, frame) < m.getTrait(VoxMaterial.MaterialTrait._metal))
-            return;
+//        if(Tools3D.randomizePointRare(vx, vy, vz, frame) < m.getTrait(VoxMaterial.MaterialTrait._metal))
+//            return;
         final float emit = m.getTrait(VoxMaterial.MaterialTrait._emit) * 0.75f;
         final float alpha = m.getTrait(VoxMaterial.MaterialTrait._alpha);
         final float hs = size * 0.5f;
@@ -253,24 +253,24 @@ public class Renderer {
     }
 
     /**
-     * Compiles all of the individual voxels drawn with {@link #splat(float, float, float, int, int, int, byte, int)} into a
+     * Compiles all the individual voxels drawn with {@link #splat(float, float, float, int, int, int, byte)} into a
      * single Pixmap and returns it.
      * @param turns yaw in turns; like turning your head or making a turn in a car
-     * @return {@link #pixmap}, edited to contain the render of all the voxels put in this with {@link #splat(float, float, float, int, int, int, byte, int)}
+     * @return {@link #pixmap}, edited to contain the render of all the voxels put in this with {@link #splat(float, float, float, int, int, int, byte)}
      */
-    public Pixmap blit(float turns, int frame) {
-        return blit(turns, 0f, 0f, frame);
+    public Pixmap blit(float turns) {
+        return blit(turns, 0f, 0f);
     }
 
     /**
-     * Compiles all of the individual voxels drawn with {@link #splat(float, float, float, int, int, int, byte, int)} into a
+     * Compiles all of the individual voxels drawn with {@link #splat(float, float, float, int, int, int, byte)} into a
      * single Pixmap and returns it.
      * @param yaw in turns; like turning your head or making a turn in a car
      * @param pitch in turns; like looking up or down or making a nosedive in a plane
      * @param roll in turns; like tilting your head to one side or doing a barrel roll in a starship
-     * @return {@link #pixmap}, edited to contain the render of all the voxels put in this with {@link #splat(float, float, float, int, int, int, byte, int)}
+     * @return {@link #pixmap}, edited to contain the render of all the voxels put in this with {@link #splat(float, float, float, int, int, int, byte)}
      */
-    public Pixmap blit(float yaw, float pitch, float roll, int frame) {
+    public Pixmap blit(float yaw, float pitch, float roll) {
         final int threshold = 13;
         pixmap.setColor(0);
         pixmap.fill();
@@ -404,7 +404,7 @@ public class Renderer {
     // To move one z+ in voxels is y + 3 in pixels.
     // To move one z- in voxels is y - 3 in pixels.
 
-    public Pixmap drawSplats(byte[][][] colors, float angleTurns, int frame, IntObjectMap<VoxMaterial> materialMap) {
+    public Pixmap drawSplats(byte[][][] colors, float angleTurns, IntObjectMap<VoxMaterial> materialMap) {
         this.materialMap = materialMap;
         final int size = colors.length;
         final float hs = (size) * 0.5f;
@@ -417,12 +417,12 @@ public class Renderer {
                     {
                         final float xPos = (x-hs) * c - (y-hs) * s + size;
                         final float yPos = (x-hs) * s + (y-hs) * c + size;
-                        splat(xPos, yPos, z, x, y, z, v, frame);
+                        splat(xPos, yPos, z, x, y, z, v);
                     }
                 }
             }
         }
-        return blit(angleTurns, frame);
+        return blit(angleTurns);
     }
 
     public void splatOnly(byte[][][] colors, float yaw, float pitch, float roll, int frame,
@@ -447,7 +447,7 @@ public class Renderer {
                         oz = z - hs;
                         splat(  ox * x_x + oy * y_x + oz * z_x + size + translateX,
                                 ox * x_y + oy * y_y + oz * z_y + size + translateY,
-                                ox * x_z + oy * y_z + oz * z_z + hs + translateZ, x, y, z, v, frame);
+                                ox * x_z + oy * y_z + oz * z_z + hs + translateZ, x, y, z, v);
                     }
                 }
             }
@@ -459,6 +459,6 @@ public class Renderer {
                              IntObjectMap<VoxMaterial> materialMap) {
         this.materialMap = materialMap;
         splatOnly(colors, yaw, pitch, roll, frame, translateX, translateY, translateZ);
-        return blit(yaw, pitch, roll, frame);
+        return blit(yaw, pitch, roll);
     }
 }

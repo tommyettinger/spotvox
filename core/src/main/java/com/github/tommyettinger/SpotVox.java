@@ -34,13 +34,11 @@ public class SpotVox extends ApplicationAdapter {
         png.setCompression(2); // we are likely to compress these with something better, like oxipng.
         Pixmap pixmap;
         for (int i = 0; i < 8; i++) {
-            for (int f = 0; f < 4; f++) {
-                pixmap = renderer.drawSplats(voxels, i * 0.125f, f, VoxIO.lastMaterials);
-                try {
-                    png.write(Gdx.files.local("out/" + name + '/' + name + "_angle" + i + "_" + f + ".png"), pixmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            pixmap = renderer.drawSplats(voxels, i * 0.125f, VoxIO.lastMaterials);
+            try {
+                png.write(Gdx.files.local("out/" + name + '/' + name + "_angle" + i + ".png"), pixmap);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         System.out.println("Finished in " + TimeUtils.timeSinceMillis(startTime) * 0.001 + " seconds.");
