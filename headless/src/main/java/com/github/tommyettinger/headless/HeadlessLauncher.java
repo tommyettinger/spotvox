@@ -24,7 +24,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this doesn't use smoothing.", defaultValue = "0")
 	public float multiple = 0f;
 
-	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "../vox/Tree.vox")
+	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "../vox/Lomuk.vox")
 	public String input = "vox/Tree.vox";
 
 	public static void main(String[] args) {
