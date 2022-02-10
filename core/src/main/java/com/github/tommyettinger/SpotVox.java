@@ -50,22 +50,21 @@ public class SpotVox extends ApplicationAdapter {
         renderer.palette(VoxIO.lastPalette);
         renderer.init();
         png = new PixmapIO.PNG();
-        png.setCompression(2); // we are likely to compress these with something better, like oxipng.
         Pixmap pixmap;
-        boolean smoothing = multiple > 0;
+        boolean smoothing = multiple < 0;
         multiple = Math.abs(multiple);
-        for (int m = 0; m < multiple; m++) {
+        for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
             for (int i = 0; i < 8; i++) {
                 pixmap = renderer.drawSplats(voxels, i * 0.125f, VoxIO.lastMaterials);
                 try {
-                    png.write(Gdx.files.local("out/" + name + "/size" + m + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
+                    png.write(Gdx.files.local("out/" + name + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             if(m + 1 < multiple)
             {
-                voxels = smoothing ? Tools3D.smoothScale(voxels) : Tools3D.scaleAndSoak(voxels);
+                voxels = smoothing ? Tools3D.smoothScale(voxels) : Tools3D.simpleScale(voxels);
                 renderer = new Renderer(size *= 2);
                 renderer.palette(VoxIO.lastPalette);
                 renderer.init();
