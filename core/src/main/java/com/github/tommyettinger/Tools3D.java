@@ -373,7 +373,27 @@ public class Tools3D {
         }
         return result;
     }
-
+    public static byte[][][] blockyScale(byte[][][] voxels) {
+        return blockyScale(voxels, new byte[voxels.length << 1][voxels[0].length << 1][voxels[0][0].length << 1]);
+    }
+    public static byte[][][] blockyScale(byte[][][] voxels, byte[][][] result) {
+        for (int x = 0; x < voxels.length; x++) {
+            for (int y = 0; y < voxels[x].length; y++) {
+                for (int z = 0; z < voxels[x][y].length; z++) {
+                    byte v = voxels[x][y][z];
+                    result[x << 1][y << 1][z << 1] = v;
+                    result[x << 1|1][y << 1][z << 1] = v;
+                    result[x << 1][y << 1|1][z << 1] = v;
+                    result[x << 1][y << 1][z << 1|1] = v;
+                    result[x << 1|1][y << 1|1][z << 1] = v;
+                    result[x << 1][y << 1|1][z << 1|1] = v;
+                    result[x << 1|1][y << 1][z << 1|1] = v;
+                    result[x << 1|1][y << 1|1][z << 1|1] = v;
+                }
+            }
+        }
+        return result;
+    }
 
     public static byte[][][] simpleScale(byte[][][] voxels) {
         return simpleScale(voxels, new byte[voxels.length << 1][voxels[0].length << 1][voxels[0][0].length << 1]);

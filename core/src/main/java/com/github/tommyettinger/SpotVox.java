@@ -51,7 +51,7 @@ public class SpotVox extends ApplicationAdapter {
         renderer.init();
         png = new PixmapIO.PNG();
         Pixmap pixmap;
-        boolean smoothing = multiple < 0;
+        boolean smoothing = multiple > 0;
         multiple = Math.abs(multiple);
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
             for (int i = 0; i < 8; i++) {
@@ -64,7 +64,7 @@ public class SpotVox extends ApplicationAdapter {
             }
             if(m + 1 < multiple)
             {
-                voxels = smoothing ? Tools3D.smoothScale(voxels) : Tools3D.simpleScale(voxels);
+                voxels = smoothing ? Tools3D.simpleScale(voxels) : Tools3D.blockyScale(voxels);
                 renderer = new Renderer(size *= 2);
                 renderer.palette(VoxIO.lastPalette);
                 renderer.init();
