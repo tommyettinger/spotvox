@@ -20,7 +20,7 @@ public class Renderer {
     public float[][] shadeX, shadeZ, colorL, colorA, colorB, midShading;
     public int[] palette;
     public float[] paletteL, paletteA, paletteB;
-    public boolean outline = true;
+    public int outline = 2;
     public int size;
     public int shrink = 2;
     public float neutral = 1f;
@@ -354,27 +354,42 @@ public class Renderer {
                 }
             }
         }
-        if (outline) {
-            int o;
+        if (outline != 0) {
+            int inner, outer = 0x000000FF;
+            if(outline <= 1) outer = 0;
             for (int x = step; x <= xSize - step; x+= step) {
 //                final int hx = x;
                 final int hx = x >>> shrink;
                 for (int y = step; y <= ySize - step; y+= step) {
 //                    final int hy = y;
                     int hy = y >>> shrink;
-                    if ((o = outlines[x][y]) != 0) {
+                    inner = outlines[x][y];
+                    if(outline == 2) outer = inner;
+                    if (inner != 0) {
                         depth = depths[x][y];
-                        if (outlines[x - step][y] == 0 || depths[x - step][y] < depth - threshold) {
-                            pixmap.drawPixel(hx - 1, hy    , o);
+                        if (outlines[x - step][y] == 0) {
+                            pixmap.drawPixel(hx - 1, hy    , outer);
                         }
-                        if (outlines[x + step][y] == 0 || depths[x + step][y] < depth - threshold) {
-                            pixmap.drawPixel(hx + 1, hy    , o);
+                        else if (depths[x - step][y] < depth - threshold) {
+                            pixmap.drawPixel(hx - 1, hy    , inner);
                         }
-                        if (outlines[x][y - step] == 0 || depths[x][y - step] < depth - threshold) {
-                            pixmap.drawPixel(hx    , hy - 1, o);
+                        if (outlines[x + step][y] == 0) {
+                            pixmap.drawPixel(hx + 1, hy    , outer);
                         }
-                        if (outlines[x][y + step] == 0 || depths[x][y + step] < depth - threshold) {
-                            pixmap.drawPixel(hx    , hy + 1, o);
+                        else if (depths[x + step][y] < depth - threshold) {
+                            pixmap.drawPixel(hx + 1, hy    , inner);
+                        }
+                        if (outlines[x][y - step] == 0) {
+                            pixmap.drawPixel(hx    , hy - 1, outer);
+                        }
+                        else if (depths[x][y - step] < depth - threshold) {
+                            pixmap.drawPixel(hx    , hy - 1, inner);
+                        }
+                        if (outlines[x][y + step] == 0) {
+                            pixmap.drawPixel(hx    , hy + 1, outer);
+                        }
+                        else if (depths[x][y + step] < depth - threshold) {
+                            pixmap.drawPixel(hx    , hy + 1, inner);
                         }
                     }
                 }

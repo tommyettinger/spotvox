@@ -49,6 +49,7 @@ public class SpotVox extends ApplicationAdapter {
         renderer = new Renderer(size);
         renderer.palette(VoxIO.lastPalette);
         renderer.init();
+        renderer.outline = outline;
         png = new PixmapIO.PNG();
         Pixmap pixmap;
         boolean smoothing = multiple > 0;
@@ -68,6 +69,7 @@ public class SpotVox extends ApplicationAdapter {
                 renderer = new Renderer(size *= 2);
                 renderer.palette(VoxIO.lastPalette);
                 renderer.init();
+                renderer.outline = outline;
             }
         }
         System.out.println("Finished in " + TimeUtils.timeSinceMillis(startTime) * 0.001 + " seconds.");
