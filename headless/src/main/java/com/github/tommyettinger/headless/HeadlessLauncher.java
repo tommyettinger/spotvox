@@ -20,14 +20,14 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-s", "--size"}, description = "The width, height, and depth of the space to place the model into, in voxels.", defaultValue = "-1")
 	public int size = -1;
 
-	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: heavy, light, partial, none.", defaultValue = "heavy")
+	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: heavy, light, partial, none.", defaultValue = "light")
 	public String edge = "light";
 
 	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "3")
 	public int multiple = 3;
 
-	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "../vox/Test-Broken.vox")
-	public String input = "Tree.vox";
+	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Eye-Tyrant.vox")
+	public String input = "Eye-Tyrant.vox";
 
 	public static void main(String[] args) {
 		int exitCode = new picocli.CommandLine(new HeadlessLauncher()).execute(args);
@@ -38,6 +38,8 @@ public class HeadlessLauncher implements Callable<Integer> {
 	public Integer call() {
 		HeadlessApplicationConfiguration configuration = new HeadlessApplicationConfiguration();
 		configuration.updatesPerSecond = -1;
+		if(SpotVox.DEBUG)
+			input = "../vox/" + "Lomuk.vox";
 		try {
 			//// loads a file by its full path, which we get via a command-line arg
 			byte[][][] voxels = VoxIO.readVox(new LittleEndianDataInputStream(new FileInputStream(input)));
@@ -46,7 +48,6 @@ public class HeadlessLauncher implements Callable<Integer> {
 				return -1;
 			}
 			if(size < 0) size = voxels.length;
-//			voxels = Tools3D.scaleAndSoak(voxels);
             voxels = Tools3D.soak(voxels);
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
@@ -54,7 +55,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge), configuration){
 				{
 					try {
-						mainLoopThread.join(600000L);
+						mainLoopThread.join();
 					} catch (InterruptedException e) {
 						System.out.println("Interrupted!");
 					}
