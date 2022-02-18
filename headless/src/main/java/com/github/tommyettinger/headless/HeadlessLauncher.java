@@ -1,9 +1,11 @@
 package com.github.tommyettinger.headless;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
-import com.github.tommyettinger.*;
+import com.github.tommyettinger.LittleEndianDataInputStream;
+import com.github.tommyettinger.SpotVox;
+import com.github.tommyettinger.Tools3D;
+import com.github.tommyettinger.VoxIO;
 import picocli.CommandLine;
 
 import java.io.FileInputStream;
@@ -24,7 +26,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "3")
 	public int multiple = 3;
 
-	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "../vox/Eye_Tyrant_Floor.vox")
+	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "../vox/Test-Broken.vox")
 	public String input = "Tree.vox";
 
 	public static void main(String[] args) {
@@ -52,7 +54,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge), configuration){
 				{
 					try {
-						mainLoopThread.join(60000L);
+						mainLoopThread.join(600000L);
 					} catch (InterruptedException e) {
 						System.out.println("Interrupted!");
 					}

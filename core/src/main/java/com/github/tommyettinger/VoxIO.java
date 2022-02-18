@@ -52,6 +52,7 @@ public class VoxIO {
     };
     public static int[] lastPalette = Arrays.copyOf(defaultPalette, 256);
     public static final IntObjectMap<VoxMaterial> lastMaterials = new IntObjectMap<>(256);
+    public static int minX = Integer.MAX_VALUE, maxX, minY = Integer.MAX_VALUE, maxY, minZ = Integer.MAX_VALUE, maxZ;
     static {
         lastMaterials.setDefaultValue(VoxMaterial.DEFAULT_MATERIAL);
     }
@@ -96,8 +97,15 @@ public class VoxIO {
                         // XYZI contains n voxels
                         int numVoxels = stream.readInt();
                         // each voxel has x, y, z and color index values
+                        int x, y, z;
                         for (int i = 0; i < numVoxels; i++) {
-                            voxelData[stream.read() + offX][stream.read() + offY][stream.read()] = stream.readByte();
+                            voxelData[x = stream.read() + offX][y = stream.read() + offY][z = stream.read()] = stream.readByte();
+                            minX = Math.min(minX, x);
+                            minY = Math.min(minY, y);
+                            minZ = Math.min(minZ, z);
+                            maxX = Math.max(maxX, x);
+                            maxY = Math.max(maxY, y);
+                            maxZ = Math.max(maxZ, z);
                         }
                     } else if(chunkName.equals("RGBA"))
                     {

@@ -2,6 +2,7 @@ package com.github.tommyettinger;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.github.tommyettinger.colorful.oklab.ColorTools;
 import com.github.tommyettinger.ds.IntObjectMap;
 
@@ -36,7 +37,6 @@ public class Renderer {
     public void init(){
         final int w = size * 4 + 4, h = size * 5 + 4;
         pixmap = new Pixmap(w>>>shrink, h>>>shrink, Pixmap.Format.RGBA8888);
-        render =   new int[w][h];
         outlines = new int[w][h];
         depths =   new int[w][h];
         materials = new VoxMaterial[w][h];
@@ -200,17 +200,16 @@ public class Renderer {
         final float emit = m.getTrait(VoxMaterial.MaterialTrait._emit) * 0.75f;
         final float alpha = m.getTrait(VoxMaterial.MaterialTrait._alpha);
         final float hs = size * 0.5f;
-        for (int x = 0, ax = xx; x < 4 && ax < render.length; x++, ax++) {
-            for (int y = 0, ay = yy; y < 4 && ay < render[0].length; y++, ay++) {
-                if ((depth > depths[ax][ay] || (depth == depths[ax][ay] && colorL[ax][ay] < paletteL[voxel & 255])) && (alpha == 0f)) {
+        for (int x = 0, ax = xx; x < 4 && ax < depths.length; x++, ax++) {
+            for (int y = 0, ay = yy; y < 4 && ay < depths[0].length; y++, ay++) {
+                if ((alpha == 0f) && (depth > depths[ax][ay] || (depth == depths[ax][ay] && colorL[ax][ay] < paletteL[voxel & 255]))) {
                     drawn = true;
                     colorL[ax][ay] = paletteL[voxel & 255];
                     colorA[ax][ay] = paletteA[voxel & 255];
                     colorB[ax][ay] = paletteB[voxel & 255];
                     depths[ax][ay] = depth;
                     materials[ax][ay] = m;
-                    if(alpha == 0f)
-                        outlines[ax][ay] = ColorTools.toRGBA8888(limitToGamut(paletteL[voxel & 255] * (0.8f + emit), paletteA[voxel & 255], paletteB[voxel & 255], 1f));
+                    outlines[ax][ay] = ColorTools.toRGBA8888(limitToGamut(paletteL[voxel & 255] * (0.8f + emit), paletteA[voxel & 255], paletteB[voxel & 255], 1f));
 //                                Coloring.darken(palette[voxel & 255], 0.375f - emit);
 //                                Coloring.adjust(palette[voxel & 255], 0.625f + emit, neutral);
 //                    else
@@ -238,7 +237,6 @@ public class Renderer {
         pixmap.setColor(0);
         pixmap.fill();
         fill(depths, 0);
-        fill(render, 0);
         fill(outlines, (byte) 0);
         fill(voxels, -1);
         fill(shadeX, -1f);
@@ -274,7 +272,7 @@ public class Renderer {
         final int threshold = 13;
         pixmap.setColor(0);
         pixmap.fill();
-        int xSize = render.length - 1, ySize = render[0].length - 1, depth;
+        int xSize = depths.length - 1, ySize = depths[0].length - 1, depth;
         int v, vx, vy, vz, fx, fy, fz;
         float hs = (size) * 0.5f, ox, oy, oz, tx, ty, tz;
         final float cYaw = cos_(yaw), sYaw = sin_(yaw);
@@ -347,7 +345,7 @@ public class Renderer {
         for (int x = xSize; x >= 0; x--) {
             for (int y = ySize; y >= 0; y--) {
                 if (colorA[x][y] >= 0f) {
-                    pixmap.drawPixel(x >>> shrink, y >>> shrink, render[x][y] = ColorTools.toRGBA8888(ColorTools.oklab(
+                    pixmap.drawPixel(x >>> shrink, y >>> shrink, ColorTools.toRGBA8888(ColorTools.oklab(
                             Math.min(Math.max(colorL[x][y] - 0.1f + midShading[x][y], 0f), 1f),
                                                         (colorA[x][y] - 0.5f) * neutral + 0.5f,
                             (colorB[x][y] - 0.5f) * neutral + 0.5f, 1f)));
@@ -364,8 +362,8 @@ public class Renderer {
 //                    final int hy = y;
                     int hy = y >>> shrink;
                     inner = outlines[x][y];
-                    if(outline == 2) outer = inner;
                     if (inner != 0) {
+                        if(outline == 2) outer = inner;
                         depth = depths[x][y];
                         if (outlines[x - step][y] == 0) {
                             pixmap.drawPixel(hx - 1, hy    , outer);
@@ -397,7 +395,6 @@ public class Renderer {
         }
 
         fill(depths, 0);
-        fill(render, 0);
         fill(outlines, (byte) 0);
         fill(voxels, -1);
         fill(shadeX, -1f);
@@ -424,9 +421,9 @@ public class Renderer {
         final int size = colors.length;
         final float hs = (size) * 0.5f;
         final float c = cos_(angleTurns), s = sin_(angleTurns);
-        for (int z = 0; z < size; z++) {
-            for (int x = 0; x < size; x++) {
-                for (int y = 0; y < size; y++) {
+        for (int z = VoxIO.minZ; z <= VoxIO.maxZ; z++) {
+            for (int x = VoxIO.minX; x <= VoxIO.maxX; x++) {
+                for (int y = VoxIO.minY; y <= VoxIO.maxY; y++) {
                     final byte v = colors[x][y][z];
                     if(v != 0)
                     {

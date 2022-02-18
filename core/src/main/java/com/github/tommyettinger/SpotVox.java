@@ -66,7 +66,13 @@ public class SpotVox extends ApplicationAdapter {
             if(m + 1 < multiple)
             {
                 voxels = smoothing ? Tools3D.simpleScale(voxels) : Tools3D.blockyScale(voxels);
-                renderer = new Renderer(size *= 2);
+                VoxIO.minX <<= 1;
+                VoxIO.minY <<= 1;
+                VoxIO.minZ <<= 1;
+                VoxIO.maxX <<= 1;
+                VoxIO.maxY <<= 1;
+                VoxIO.maxZ <<= 1;
+                renderer = new Renderer(size <<= 1);
                 renderer.palette(VoxIO.lastPalette);
                 renderer.init();
                 renderer.outline = outline;
