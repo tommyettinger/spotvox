@@ -63,7 +63,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 			};
 
 		} catch (FileNotFoundException e) {
-			System.out.println("Specified file not found.");
+			System.out.println("Parameters are not valid. Run with -h to show help.");
 			return -1;
 		}
 		return 0;

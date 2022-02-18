@@ -9,4 +9,4 @@ C:\d\jvm\graal16\bin\native-image.cmd ^
 -H:SerializationConfigurationFiles=config/serialization-config.json ^
 -H:ResourceConfigurationFiles=config/resource-config.json ^
 -Dorg.lwjgl.librarypath=. ^
--jar spotvox-0.0.1.jar
+-jar spotvox.jar

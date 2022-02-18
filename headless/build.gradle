@@ -11,7 +11,7 @@ dependencies {
 }
 
 jar {
-	archiveBaseName.set(appName)
+	archiveFileName.set(appName+".jar")
 	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 	dependsOn configurations.runtimeClasspath
 	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
