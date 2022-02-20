@@ -20,7 +20,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-s", "--size"}, description = "The width, height, and depth of the space to place the model into, in voxels.", defaultValue = "-1")
 	public int size = -1;
 
-	@CommandLine.Option(names = {"-S", "--saturation"}, description = "A modifier that affects how saturated colors will be; 0 is unchanged, 0.5 is super-bold, and -1 is grayscale.", defaultValue = "-0.2")
+	@CommandLine.Option(names = {"-S", "--saturation"}, description = "A modifier that affects how saturated colors will be; 0 is unchanged, 0.5 is super-bold, and -1 is grayscale.", defaultValue = "0")
 	public float saturation = 0;
 
 	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: heavy, light, partial, none.", defaultValue = "light")

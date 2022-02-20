@@ -15,7 +15,9 @@ import static com.github.yellowstonegames.core.ArrayTools.fill;
  */
 public class Renderer {
     public Pixmap pixmap;
-    public int[][] depths, voxels, render, outlines;
+    public int[][] depths;
+    public int[][] voxels;
+    public int[][] outlines;
     public VoxMaterial[][] materials;
     public float[][] shadeX, shadeZ, colorL, colorA, colorB, midShading;
     public int[] palette;
@@ -208,7 +210,7 @@ public class Renderer {
                     colorB[ax][ay] = paletteB[voxel & 255];
                     depths[ax][ay] = depth;
                     materials[ax][ay] = m;
-                    outlines[ax][ay] = ColorTools.toRGBA8888(limitToGamut(paletteL[voxel & 255] * (0.8f + emit), paletteA[voxel & 255], paletteB[voxel & 255], 1f));
+                    outlines[ax][ay] = ColorTools.toRGBA8888(limitToGamut(paletteL[voxel & 255] * (0.8f + emit), (paletteA[voxel & 255] - 0.5f) * neutral + 0.5f, (paletteB[voxel & 255] - 0.5f) * neutral + 0.5f, 1f));
 //                                Coloring.darken(palette[voxel & 255], 0.375f - emit);
 //                                Coloring.adjust(palette[voxel & 255], 0.625f + emit, neutral);
 //                    else
