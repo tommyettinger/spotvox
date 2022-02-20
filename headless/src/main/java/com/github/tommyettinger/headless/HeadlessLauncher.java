@@ -20,6 +20,9 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-s", "--size"}, description = "The width, height, and depth of the space to place the model into, in voxels.", defaultValue = "-1")
 	public int size = -1;
 
+	@CommandLine.Option(names = {"-S", "--saturation"}, description = "A modifier that affects how saturated colors will be; 0 is unchanged, 0.5 is super-bold, and -1 is grayscale.", defaultValue = "-0.2")
+	public float saturation = 0;
+
 	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: heavy, light, partial, none.", defaultValue = "light")
 	public String edge = "light";
 
@@ -39,7 +42,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 		HeadlessApplicationConfiguration configuration = new HeadlessApplicationConfiguration();
 		configuration.updatesPerSecond = -1;
 		if(SpotVox.DEBUG)
-			input = "../vox/" + "Lomuk.vox";
+			input = "../vox/" + input;
 		try {
 			//// loads a file by its full path, which we get via a command-line arg
 			byte[][][] voxels = VoxIO.readVox(new LittleEndianDataInputStream(new FileInputStream(input)));
@@ -52,7 +55,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
-			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge), configuration){
+			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation), configuration){
 				{
 					try {
 						mainLoopThread.join();

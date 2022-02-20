@@ -2,7 +2,6 @@ package com.github.tommyettinger;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.github.tommyettinger.colorful.oklab.ColorTools;
 import com.github.tommyettinger.ds.IntObjectMap;
 
@@ -149,7 +148,7 @@ public class Renderer {
      * Negative modifiers will decrease saturation, while positive ones increase it. If positive, any
      * changes are incredibly sensitive, and 0.05 will seem very different from 0.0. If negative, changes
      * are not as sensitive, but most of the noticeable effect will happen close to -0.1.
-     * @param saturationModifier a float between -0.5f and 0.2f; negative decreases saturation, positive increases
+     * @param saturationModifier a float between -1f and 0.5f; negative decreases saturation, positive increases
      * @return this, for chaining
      */
     public Renderer saturation(float saturationModifier) {

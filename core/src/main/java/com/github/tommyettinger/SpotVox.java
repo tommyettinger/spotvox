@@ -4,14 +4,12 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.NumberUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.io.IOException;
 
 public class SpotVox extends ApplicationAdapter {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public Renderer renderer;
     public String name;
     public byte[][][] voxels;
@@ -19,14 +17,15 @@ public class SpotVox extends ApplicationAdapter {
     public int multiple;
     public int outline;
     public int size;
+    public float saturation;
 
     public SpotVox() {
-        renderer = new Renderer();
     }
-    public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge) {
+    public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
+        this.saturation = saturation;
         this.multiple = multiple == 0 ? 1 : multiple;
         switch (edge) {
             case "none":
@@ -50,6 +49,7 @@ public class SpotVox extends ApplicationAdapter {
         renderer.palette(VoxIO.lastPalette);
         renderer.init();
         renderer.outline = outline;
+        renderer.saturation(saturation);
         png = new PixmapIO.PNG();
         Pixmap pixmap;
         boolean smoothing = multiple > 0;
@@ -76,6 +76,7 @@ public class SpotVox extends ApplicationAdapter {
                 renderer.palette(VoxIO.lastPalette);
                 renderer.init();
                 renderer.outline = outline;
+                renderer.saturation(saturation);
             }
         }
         System.out.println("Rendered to files in " + (DEBUG ? "out/" + name : name));
