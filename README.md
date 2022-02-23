@@ -1,15 +1,42 @@
 # spotvox
 A drag-and-drop or command-line tool that renders MagicaVoxel .vox files to pixel art.
 
+# It Looks Like...
+
+First, a cartoon-style helicopter, at 2x size with smoothing and a light outline, viewed diagonally:
+
+![A helicopter](https://i.imgur.com/nx0MSVP.png)
+
+Then, a large render (8x size) of a tree, with smoothing and a heavy outline, viewed from a side:
+
+![A large tree](https://i.imgur.com/w6b9yj7.png)
+
+A Monument Valley level, at 2x size without smoothing but with a partial outline, viewed diagonally:
+
+![Monument Valley 16](https://i.imgur.com/Dp2WQYx.png)
+
+A Monument Valley level, at 4x size without smoothing and with no outline, viewed diagonally:
+
+![Monument Valley 10](https://i.imgur.com/NuYktKL.png)
+
+Materials are supported; here's a glowing creature at 2x size with smoothing and a light outline, viewed diagonally:
+
+![A magical creature that glows](https://i.imgur.com/v3334jW.png)
+
 # Usage
 Download a .zip file from the latest in the [Releases section](https://github.com/tommyettinger/spotvox/releases);
 use windows-x64 if you're on 64-bit Windows (most recent installations are 64-bit), or all-platforms if you aren't.
-Always extract the .zip, of course. On Windows you can drag and drop a .vox file into the .exe or .bat file. On other
-platforms, use `java -jar spotvox.jar --help` from the command line (in the same folder as spotvox.jar) to see usage
-instructions. Using the command line gives various options, like using more or fewer scales (by default, this produces
+Always extract the .zip, of course. On Windows you can drag and drop a .vox file into the .exe or .bat file. When using
+drag and drop, 3 sizes are created, with smoothing, and with light outlines; these go in a folder next to the .vox. On
+other platforms, use `java -jar spotvox.jar --help` from the command line (in the same folder as spotvox.jar) to see
+usage. Using the command line gives various options, like using more or fewer scales (by default, this produces
 x1, x2, and x4 scales), changing the style of voxel edges/outlines, and positioning the .vox model in a different size
 of bounding box, so you can synchronize the sizing of different models' renders. The path to the .vox file to render
 always goes last. You can use the command line on any platform; if using windows-x64, use `spotvox.exe --help` instead.
+
+If you get errors loading some models, try loading them in the current MagicaVoxel, editing them in some non-destructive
+way (like rotating 360 degrees), then saving before you load them again. Older formats of .vox model aren't read
+correctly at the moment.
 
 # Thanks
 This project uses the great [PicoCLI](https://picocli.info/) library for clean command-line handling.
