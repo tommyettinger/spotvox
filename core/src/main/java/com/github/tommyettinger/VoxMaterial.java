@@ -32,7 +32,6 @@ public class VoxMaterial {
 		public String toString() {
 			return name;
 		}
-
 	}
 
 	public enum MaterialTrait {
@@ -48,14 +47,16 @@ public class VoxMaterial {
 		_g("Phase"),
 		//5 affects extra lightness applied when both the front and top are lit
 		_ior("Reflection"),
-		//6 when higher, adds a chance the voxel will not be rendered
+		//6 unused
 		_ldr("LDR"),
 		//7 not related to the "Cloud" _media MaterialType; unused
 		_media("Special"),
 		//8 unused
 		_metal("Metal"),
 		//9 determines how much lighting affects the color of a surface
-		_rough("Roughness")
+		_rough("Roughness"),
+		//10 used in newer MV instead of a separate MaterialType
+		_type("Type")
 		;
 		
 		public String name;
@@ -82,7 +83,7 @@ public class VoxMaterial {
 			TRAIT_MAP.put(t.name, t.ordinal());
 		}
 	}
-	public final MaterialType type;
+	public MaterialType type;
 	public final IntFloatMap traits = new IntFloatMap(16);
 	
 	public VoxMaterial(){
@@ -91,25 +92,22 @@ public class VoxMaterial {
 		traits.put(5, 0.3f);
 		traits.put(4, 0.41f);
 	}
-	public VoxMaterial(String typeCode){
-		type = MaterialType.valueOf(typeCode);
-		traits.put(9, 0.1f);
-		traits.put(5, 0.3f);
-		traits.put(4, 0.41f);
-		traits.put(14, 0.5f);
-		if(type == MaterialType._media)
-			traits.put(0, 0.6f); // cloud materials are always partly transparent
-	}
 
-	public VoxMaterial(String typeName, String traitMap) {
-		type = ALL_TYPES[TYPE_MAP.getOrDefault(typeName, 0)];
+	public VoxMaterial(String traitMap) {
 		traits.put(9, 0.1f);
 		traits.put(5, 0.3f);
 		traits.put(4, 0.41f);
-		traits.put(14, 0.5f);
 		String[] split = traitMap.split("[ ,;]+");
 		for (int i = 1; i < (split.length & -2); i+=2) {
-			traits.put(TRAIT_MAP.getOrDefault(split[i-1], -1), Float.parseFloat(split[i]));
+			int trait = TRAIT_MAP.getOrDefault(split[i-1], -1);
+			if(trait == MaterialTrait._type.ordinal())
+			{
+				int type = TRAIT_MAP.getOrDefault(split[i], 0);
+				this.type = ALL_TYPES[type];
+				traits.put(trait, type);
+			}
+			else
+				traits.put(trait, Float.parseFloat(split[i]));
 		}
 	}
 
@@ -118,13 +116,20 @@ public class VoxMaterial {
 	}
 	public void putTrait(MaterialTrait trait, float value){
 		int ord = trait.ordinal();
-		if(ord == 6) traits.put(8, value);
 		traits.put(ord, value);
 	}
-	public void putTrait(String trait, float value){
-		int ord = MaterialTrait.valueOf(trait).ordinal();
-		if(ord == 6) traits.put(8, value);
-		traits.put(ord, value);
+	public void putTrait(String trait, String value) {
+		try {
+			int ord = MaterialTrait.valueOf(trait).ordinal();
+			if ("_type".equals(trait)) {
+				int t = MaterialType.valueOf(value).ordinal();
+				traits.put(ord, t);
+				type = ALL_TYPES[t];
+			} else {
+				traits.put(ord, Float.parseFloat(value));
+			}
+		}catch (IllegalArgumentException ignored){
+		}
 	}
 
 	@Override

@@ -122,13 +122,18 @@ public class VoxIO {
                             int valLen = stream.readInt();
                             stream.read(val, 0, valLen);
                             VoxMaterial vm;
-                            if ((vm = lastMaterials.getOrDefault(materialID, null)) == null)
-                                lastMaterials.put(materialID, new VoxMaterial(new String(val, 0, valLen, StandardCharsets.ISO_8859_1)));
-                            else
-                                vm.putTrait(new String(key, 0, keyLen, StandardCharsets.ISO_8859_1), Float.parseFloat(new String(val, 0, valLen, StandardCharsets.ISO_8859_1)));
+                            if ((vm = lastMaterials.getOrDefault(materialID, null)) == null) {
+                                lastMaterials.put(materialID, vm = new VoxMaterial());
+                            }
+                            //} else {
+                                String ks = new String(key, 0, keyLen, StandardCharsets.ISO_8859_1);
+                                String vs = new String(val, 0, valLen, StandardCharsets.ISO_8859_1);
+                                vm.putTrait(ks, vs);
                         }
                     }
-                    else stream.skipBytes(chunkSize);   // read any excess bytes
+                    else{
+                        stream.skipBytes(chunkSize);   // read any excess bytes
+                    }
                 }
 
             }
