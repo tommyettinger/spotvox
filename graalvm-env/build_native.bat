@@ -1,4 +1,5 @@
-C:\d\jvm\graal16\bin\native-image.cmd ^
+"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64 && ^
+C:\d\jvm\graal17\bin\native-image.cmd ^
 -H:+ReportExceptionStackTraces ^
 --report-unsupported-elements-at-runtime ^
 --no-fallback ^
