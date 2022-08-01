@@ -100,11 +100,11 @@ public class VoxMaterial {
 		String[] split = traitMap.split("[ ,;]+");
 		for (int i = 1; i < (split.length & -2); i+=2) {
 			int trait = TRAIT_MAP.getOrDefault(split[i-1], -1);
-			if(trait == MaterialTrait._type.ordinal())
+			if(trait == 10) // _type
 			{
-				int type = TRAIT_MAP.getOrDefault(split[i], 0);
-				this.type = ALL_TYPES[type];
-				traits.put(trait, type);
+				int t = TRAIT_MAP.getOrDefault(split[i], 0);
+				type = ALL_TYPES[t];
+				traits.put(trait, t);
 			}
 			else
 				traits.put(trait, Float.parseFloat(split[i]));

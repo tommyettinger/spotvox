@@ -125,10 +125,9 @@ public class VoxIO {
                             if ((vm = lastMaterials.getOrDefault(materialID, null)) == null) {
                                 lastMaterials.put(materialID, vm = new VoxMaterial());
                             }
-                            //} else {
-                                String ks = new String(key, 0, keyLen, StandardCharsets.ISO_8859_1);
-                                String vs = new String(val, 0, valLen, StandardCharsets.ISO_8859_1);
-                                vm.putTrait(ks, vs);
+                            String ks = new String(key, 0, keyLen, StandardCharsets.ISO_8859_1);
+                            String vs = new String(val, 0, valLen, StandardCharsets.ISO_8859_1);
+                            vm.putTrait(ks, vs);
                         }
                     }
                     else{

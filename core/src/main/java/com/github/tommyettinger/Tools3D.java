@@ -1,11 +1,11 @@
 package com.github.tommyettinger;
 
-import com.github.tommyettinger.ds.support.Base;
-import com.github.yellowstonegames.core.Hasher;
+import com.github.tommyettinger.digital.Base;
+import com.github.tommyettinger.digital.Hasher;
 
 import java.util.Arrays;
 
-import static com.github.yellowstonegames.core.Hasher.*;
+import static com.github.tommyettinger.digital.Hasher.*;
 
 /**
  * Just laying some foundation for 3D array manipulation.
