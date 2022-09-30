@@ -6,6 +6,7 @@ import com.github.tommyettinger.LittleEndianDataInputStream;
 import com.github.tommyettinger.SpotVox;
 import com.github.tommyettinger.Tools3D;
 import com.github.tommyettinger.VoxIO;
+import com.github.tommyettinger.io.*;
 import picocli.CommandLine;
 
 import java.io.FileInputStream;
@@ -45,13 +46,27 @@ public class HeadlessLauncher implements Callable<Integer> {
 			input = "../vox/" + input;
 		try {
 			//// loads a file by its full path, which we get via a command-line arg
-			byte[][][] voxels = VoxIO.readVox(new LittleEndianDataInputStream(new FileInputStream(input)));
+			VoxModel voxels = VoxIOExtended.readVox(new LittleEndianDataInputStream(new FileInputStream(input)));
 			if(voxels == null) {
 				System.out.println("Unable to read input file.");
 				return -1;
 			}
-			if(size < 0) size = voxels.length;
-            voxels = Tools3D.soak(voxels);
+			if(size < 0) {
+				size = 1;
+				for(GroupChunk gc : voxels.groupChunks.values()) {
+					for (int ch : gc.childIds) {
+						TransformChunk tc = voxels.transformChunks.get(ch);
+						if (tc != null) {
+							for (ShapeModel sm : voxels.shapeChunks.get(tc.childId).models) {
+								byte[][][] g = voxels.grids.get(sm.id);
+								size = Math.max(size, Math.round(tc.translation.x) + g.length);
+								size = Math.max(size, Math.round(tc.translation.y) + g[0].length);
+								size = Math.max(size, Math.round(tc.translation.z + g[0][0].length * 0.5f));
+							}
+						}
+					}
+				}
+			}
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));

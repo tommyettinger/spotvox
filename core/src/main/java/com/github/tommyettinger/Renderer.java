@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
 import com.github.tommyettinger.colorful.oklab.ColorTools;
 import com.github.tommyettinger.ds.IntObjectMap;
+import com.github.tommyettinger.io.*;
 
 import java.util.Arrays;
 
@@ -422,11 +423,11 @@ public class Renderer {
         final int size = colors.length;
         final float hs = (size) * 0.5f;
         final float c = cos_(angleTurns), s = sin_(angleTurns);
-        System.out.printf("Rendering on range x=%d to x=%d, y=%d to y=%d, z=%d to z=%d\n", VoxIO.minX, VoxIO.maxX, VoxIO.minY, VoxIO.maxY, VoxIO.minZ, VoxIO.maxZ);
+        System.out.printf("Rendering on range x=%d to x=%d, y=%d to y=%d, z=%d to z=%d\n", VoxIOExtended.minX, VoxIOExtended.maxX, VoxIOExtended.minY, VoxIOExtended.maxY, VoxIOExtended.minZ, VoxIOExtended.maxZ);
         System.out.printf("%d, %d, %d\n", colors.length, colors[0].length, colors[0][0].length);
-        for (int z = VoxIO.minZ; z <= VoxIO.maxZ; z++) {
-            for (int x = VoxIO.minX; x <= VoxIO.maxX; x++) {
-                for (int y = VoxIO.minY; y <= VoxIO.maxY; y++) {
+        for (int z = VoxIOExtended.minZ; z <= VoxIOExtended.maxZ; z++) {
+            for (int x = VoxIOExtended.minX; x <= VoxIOExtended.maxX; x++) {
+                for (int y = VoxIOExtended.minY; y <= VoxIOExtended.maxY; y++) {
                     final byte v = colors[x][y][z];
                     if(v != 0)
                     {
@@ -440,7 +441,7 @@ public class Renderer {
         return blit(angleTurns);
     }
 
-    public void splatOnly(byte[][][] colors, float yaw, float pitch, float roll, int frame,
+    public void splatOnly(byte[][][] colors, float yaw, float pitch, float roll,
                           float translateX, float translateY, float translateZ) {
         final int size = colors.length;
         final float hs = size * 0.5f;
@@ -451,16 +452,15 @@ public class Renderer {
         final float x_x = cYaw * cPitch, y_x = cYaw * sPitch * sRoll - sYaw * cRoll, z_x = cYaw * sPitch * cRoll + sYaw * sRoll;
         final float x_y = sYaw * cPitch, y_y = sYaw * sPitch * sRoll + cYaw * cRoll, z_y = sYaw * sPitch * cRoll - cYaw * sRoll;
         final float x_z = -sPitch, y_z = cPitch * sRoll, z_z = cPitch * cRoll;
-        for (int z = 0; z < size; z++) {
-            for (int x = 0; x < size; x++) {
-                for (int y = 0; y < size; y++) {
+        for (int z = VoxIOExtended.minZ; z <= VoxIOExtended.maxZ; z++) {
+            for (int x = VoxIOExtended.minX; x <= VoxIOExtended.maxX; x++) {
+                for (int y = VoxIOExtended.minY; y <= VoxIOExtended.maxY; y++) {
                     final byte v = colors[x][y][z];
-                    if(v != 0)
-                    {
+                    if (v != 0) {
                         ox = x - hs;
                         oy = y - hs;
                         oz = z - hs;
-                        splat(  ox * x_x + oy * y_x + oz * z_x + size + translateX,
+                        splat(ox * x_x + oy * y_x + oz * z_x + size + translateX,
                                 ox * x_y + oy * y_y + oz * z_y + size + translateY,
                                 ox * x_z + oy * y_z + oz * z_z + hs + translateZ, x, y, z, v);
                     }
@@ -469,11 +469,40 @@ public class Renderer {
         }
     }
 
-    public Pixmap drawSplats(byte[][][] colors, float yaw, float pitch, float roll, int frame,
+    public Pixmap drawModel(VoxModel model, float yaw, float pitch, float roll,
+                            float translateX, float translateY, float translateZ){
+        materialMap = VoxIOExtended.lastMaterials;
+        for(GroupChunk gc : model.groupChunks.values()) {
+            for(int ch : gc.childIds) {
+                TransformChunk tc = model.transformChunks.get(ch);
+                if (tc != null) {
+                    for (ShapeModel sm : model.shapeChunks.get(tc.childId).models) {
+                        byte[][][] g = model.grids.get(sm.id);
+                        VoxIOExtended.minX = sm.minX;
+                        VoxIOExtended.maxX = sm.maxX;
+                        VoxIOExtended.minY = sm.minY;
+                        VoxIOExtended.maxY = sm.maxY;
+                        VoxIOExtended.minZ = sm.minZ;
+                        VoxIOExtended.maxZ = sm.maxZ;
+                        System.out.printf("Rendering on range x=%d to x=%d, y=%d to y=%d, z=%d to z=%d\n", VoxIOExtended.minX, VoxIOExtended.maxX, VoxIOExtended.minY, VoxIOExtended.maxY, VoxIOExtended.minZ, VoxIOExtended.maxZ);
+                        System.out.printf("%d, %d, %d\n", g.length, g[0].length, g[0][0].length);
+
+                        splatOnly(g, yaw, pitch, roll,
+//                                translateX, translateY, translateZ
+                                translateX + tc.translation.x, translateY + tc.translation.y, translateZ + tc.translation.z - g[0][0].length * 0.5f
+                        );
+                    }
+                }
+            }
+        }
+        return blit(yaw, pitch, roll);
+    }
+
+    public Pixmap drawSplats(byte[][][] colors, float yaw, float pitch, float roll,
                              float translateX, float translateY, float translateZ,
                              IntObjectMap<VoxMaterial> materialMap) {
         this.materialMap = materialMap;
-        splatOnly(colors, yaw, pitch, roll, frame, translateX, translateY, translateZ);
+        splatOnly(colors, yaw, pitch, roll, translateX, translateY, translateZ);
         return blit(yaw, pitch, roll);
     }
 }

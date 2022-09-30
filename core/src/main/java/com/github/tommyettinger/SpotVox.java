@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.github.tommyettinger.io.VoxIOExtended;
+import com.github.tommyettinger.io.VoxModel;
 
 import java.io.IOException;
 
@@ -13,7 +14,7 @@ public class SpotVox extends ApplicationAdapter {
     public static final boolean DEBUG = true;
     public Renderer renderer;
     public String name;
-    public byte[][][] voxels;
+    public VoxModel voxels;
     private PixmapIO.PNG png;
     public int multiple;
     public int outline;
@@ -22,7 +23,7 @@ public class SpotVox extends ApplicationAdapter {
 
     public SpotVox() {
     }
-    public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation) {
+    public SpotVox(String name, int size, VoxModel voxels, int multiple, String edge, float saturation) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
@@ -57,7 +58,7 @@ public class SpotVox extends ApplicationAdapter {
         multiple = Math.abs(multiple);
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
             for (int i = 0; i < 8; i++) {
-                pixmap = renderer.drawSplats(voxels, i * 0.125f, VoxIOExtended.lastMaterials);
+                pixmap = renderer.drawModel(voxels, i * 0.125f, 0, 0, 0, 0, 0);
                 try {
                     png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                 } catch (IOException e) {
@@ -66,13 +67,17 @@ public class SpotVox extends ApplicationAdapter {
             }
             if(m + 1 < multiple)
             {
-                voxels = smoothing ? Tools3D.simpleScale(voxels) : Tools3D.blockyScale(voxels);
-                VoxIO.minX <<= 1;
-                VoxIO.minY <<= 1;
-                VoxIO.minZ <<= 1;
-                VoxIO.maxX <<= 1;
-                VoxIO.maxY <<= 1;
-                VoxIO.maxZ <<= 1;
+                if (smoothing) {
+                    Tools3D.simpleScale(voxels);
+                } else {
+                    Tools3D.blockyScale(voxels);
+                }
+//                VoxIOExtended.minX <<= 1;
+//                VoxIOExtended.minY <<= 1;
+//                VoxIOExtended.minZ <<= 1;
+//                VoxIOExtended.maxX <<= 1;
+//                VoxIOExtended.maxY <<= 1;
+//                VoxIOExtended.maxZ <<= 1;
                 renderer = new Renderer(size <<= 1);
                 renderer.palette(VoxIOExtended.lastPalette);
                 renderer.init();

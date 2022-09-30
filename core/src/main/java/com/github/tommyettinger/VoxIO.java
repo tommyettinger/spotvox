@@ -17,8 +17,6 @@ import java.nio.charset.StandardCharsets;
  */
 public class VoxIO {
 
-    public static int minX = Integer.MAX_VALUE, maxX, minY = Integer.MAX_VALUE, maxY, minZ = Integer.MAX_VALUE, maxZ;
-
     public static byte[][][] readVox(InputStream stream) {
         return readVox(new LittleEndianDataInputStream(stream));
     }
@@ -63,14 +61,14 @@ public class VoxIO {
                         int x, y, z;
                         for (int i = 0; i < numVoxels; i++) {
                             voxelData[x = stream.read() + offX][y = stream.read() + offY][z = stream.read()] = stream.readByte();
-                            minX = Math.min(minX, x);
-                            minY = Math.min(minY, y);
-                            minZ = Math.min(minZ, z);
-                            maxX = Math.max(maxX, x);
-                            maxY = Math.max(maxY, y);
-                            maxZ = Math.max(maxZ, z);
+                            VoxIOExtended.minX = Math.min(VoxIOExtended.minX, x);
+                            VoxIOExtended.minY = Math.min(VoxIOExtended.minY, y);
+                            VoxIOExtended.minZ = Math.min(VoxIOExtended.minZ, z);
+                            VoxIOExtended.maxX = Math.max(VoxIOExtended.maxX, x);
+                            VoxIOExtended.maxY = Math.max(VoxIOExtended.maxY, y);
+                            VoxIOExtended.maxZ = Math.max(VoxIOExtended.maxZ, z);
                         }
-                        System.out.printf("Subranges: x=%d to x=%d, y=%d to y=%d, z=%d to z=%d\n", VoxIO.minX, VoxIO.maxX, VoxIO.minY, VoxIO.maxY, VoxIO.minZ, VoxIO.maxZ);
+                        System.out.printf("Subranges: x=%d to x=%d, y=%d to y=%d, z=%d to z=%d\n", VoxIOExtended.minX, VoxIOExtended.maxX, VoxIOExtended.minY, VoxIOExtended.maxY, VoxIOExtended.minZ, VoxIOExtended.maxZ);
                     } else if(chunkName.equals("RGBA"))
                     {
                         for (int i = 1; i < 256; i++) {

@@ -11,7 +11,6 @@ import com.github.yellowstonegames.core.StringTools;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.PrimitiveIterator;
@@ -65,8 +64,15 @@ public class VoxIOExtended {
     };
     public static final IntObjectMap<VoxMaterial> lastMaterials = new IntObjectMap<>(256);
     public static int[] lastPalette = Arrays.copyOf(defaultPalette, 256);
+    public static int minX = Integer.MAX_VALUE;
+    public static int maxX;
+    public static int minY = Integer.MAX_VALUE;
+    public static int maxY;
+    public static int minZ = Integer.MAX_VALUE;
+    public static int maxZ;
+
     static {
-        VoxIOExtended.lastMaterials.setDefaultValue(VoxMaterial.DEFAULT_MATERIAL);
+        lastMaterials.setDefaultValue(VoxMaterial.DEFAULT_MATERIAL);
     }
 
     protected static String readString(LittleEndianDataInputStream stream) throws IOException {
@@ -144,6 +150,7 @@ public class VoxIOExtended {
         lastMaterials.clear();
         VoxModel model = new VoxModel();
         byte[][][] voxelData = null;
+        IntObjectMap<ShapeModel> shapes = new IntObjectMap<>(8);
         try {
             byte[] chunkId = new byte[4];
             if (4 != stream.read(chunkId))
@@ -182,12 +189,25 @@ public class VoxIOExtended {
                             int y = stream.read() + offY;
                             int z = stream.read();
                             byte color = stream.readByte();
-                            //If you are using this as a general .vox parser, use the following line only:
-                            if(GENERAL)
-                                voxelData[x][y][z] = color;
+                            voxelData[x][y][z] = color;
+                            ShapeModel shp = shapes.get(model.grids.size());
+                            if(shp != null) {
+                                shp.minX = minX = Math.min(minX, x);
+                                shp.minY = minY = Math.min(minY, y);
+                                shp.minZ = minZ = Math.min(minZ, z);
+                                shp.maxX = maxX = Math.max(maxX, x);
+                                shp.maxY = maxY = Math.max(maxY, y);
+                                shp.maxZ = maxZ = Math.max(maxZ, z);
+                            }
+                            else {
+                                minX = minY = minZ = 0;
+                                maxX = voxelData.length - 1;
+                                maxY = voxelData[0].length - 1;
+                                maxZ = voxelData[0][0].length - 1;
+                            }
                         }
-                            Tools3D.soakInPlace(voxelData);
-                            model.grids.add(voxelData);
+                        Tools3D.soakInPlace(voxelData);
+                        model.grids.add(voxelData);
                     } else if (chunkName.equals("RGBA")) {
                         for (int i = 1; i < 256; i++) {
                             lastPalette[i] = Integer.reverseBytes(stream.readInt());
@@ -239,7 +259,8 @@ public class VoxIOExtended {
                         int modelCount = stream.readInt();
                         ShapeModel[] models = new ShapeModel[modelCount];
                         for (int i = 0; i < modelCount; i++) {
-                            models[i] = new ShapeModel(stream.readInt(), readStringPairs(stream));
+                            int shapeID = stream.readInt();
+                            models[i] = new ShapeModel(shapeID, readStringPairs(stream));
                         }
                         model.shapeChunks.put(chunkID, new ShapeChunk(chunkID, attributes, models));
                     } else stream.skipBytes(chunkSize);   // read any excess bytes

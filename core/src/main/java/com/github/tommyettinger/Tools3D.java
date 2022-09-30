@@ -2,9 +2,10 @@ package com.github.tommyettinger;
 
 import com.github.tommyettinger.digital.Base;
 import com.github.tommyettinger.digital.Hasher;
-import com.github.tommyettinger.io.VoxIOExtended;
+import com.github.tommyettinger.io.*;
 
 import java.util.Arrays;
+import java.util.ListIterator;
 
 import static com.github.tommyettinger.digital.Hasher.*;
 
@@ -497,6 +498,44 @@ public class Tools3D {
             }
         }
         return result;
+    }
+
+    public static VoxModel simpleScale(VoxModel model) {
+        ListIterator<byte[][][]> gi = model.grids.listIterator();
+        while (gi.hasNext())
+            gi.set(simpleScale(gi.next()));
+        for(TransformChunk tc : model.transformChunks.values())
+            tc.translation.scl(2f);
+        for(ShapeChunk sc : model.shapeChunks.values()){
+            for(ShapeModel sm : sc.models) {
+                sm.minX *= 2;
+                sm.minY *= 2;
+                sm.minZ *= 2;
+                sm.maxX *= 2;
+                sm.maxY *= 2;
+                sm.maxZ *= 2;
+            }
+        }
+        return model;
+    }
+
+    public static VoxModel blockyScale(VoxModel model) {
+        ListIterator<byte[][][]> gi = model.grids.listIterator();
+        while (gi.hasNext())
+            gi.set(blockyScale(gi.next()));
+        for(TransformChunk tc : model.transformChunks.values())
+            tc.translation.scl(2f);
+        for(ShapeChunk sc : model.shapeChunks.values()){
+            for(ShapeModel sm : sc.models) {
+                sm.minX *= 2;
+                sm.minY *= 2;
+                sm.minZ *= 2;
+                sm.maxX *= 2;
+                sm.maxY *= 2;
+                sm.maxZ *= 2;
+            }
+        }
+        return model;
     }
 
     public static int firstTight(byte[][][] voxels)
