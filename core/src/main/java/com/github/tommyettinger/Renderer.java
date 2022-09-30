@@ -422,6 +422,8 @@ public class Renderer {
         final int size = colors.length;
         final float hs = (size) * 0.5f;
         final float c = cos_(angleTurns), s = sin_(angleTurns);
+        System.out.printf("Rendering on range x=%d to x=%d, y=%d to y=%d, z=%d to z=%d\n", VoxIO.minX, VoxIO.maxX, VoxIO.minY, VoxIO.maxY, VoxIO.minZ, VoxIO.maxZ);
+        System.out.printf("%d, %d, %d\n", colors.length, colors[0].length, colors[0][0].length);
         for (int z = VoxIO.minZ; z <= VoxIO.maxZ; z++) {
             for (int x = VoxIO.minX; x <= VoxIO.maxX; x++) {
                 for (int y = VoxIO.minY; y <= VoxIO.maxY; y++) {

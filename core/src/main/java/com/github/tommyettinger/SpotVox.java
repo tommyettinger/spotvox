@@ -5,11 +5,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.github.tommyettinger.io.VoxIOExtended;
 
 import java.io.IOException;
 
 public class SpotVox extends ApplicationAdapter {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public Renderer renderer;
     public String name;
     public byte[][][] voxels;
@@ -46,7 +47,7 @@ public class SpotVox extends ApplicationAdapter {
     public void create() {
         long startTime = TimeUtils.millis();
         renderer = new Renderer(size);
-        renderer.palette(VoxIO.lastPalette);
+        renderer.palette(VoxIOExtended.lastPalette);
         renderer.init();
         renderer.outline = outline;
         renderer.saturation(saturation);
@@ -56,7 +57,7 @@ public class SpotVox extends ApplicationAdapter {
         multiple = Math.abs(multiple);
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
             for (int i = 0; i < 8; i++) {
-                pixmap = renderer.drawSplats(voxels, i * 0.125f, VoxIO.lastMaterials);
+                pixmap = renderer.drawSplats(voxels, i * 0.125f, VoxIOExtended.lastMaterials);
                 try {
                     png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                 } catch (IOException e) {
@@ -73,7 +74,7 @@ public class SpotVox extends ApplicationAdapter {
                 VoxIO.maxY <<= 1;
                 VoxIO.maxZ <<= 1;
                 renderer = new Renderer(size <<= 1);
-                renderer.palette(VoxIO.lastPalette);
+                renderer.palette(VoxIOExtended.lastPalette);
                 renderer.init();
                 renderer.outline = outline;
                 renderer.saturation(saturation);

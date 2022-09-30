@@ -2,6 +2,7 @@ package com.github.tommyettinger;
 
 import com.github.tommyettinger.digital.Base;
 import com.github.tommyettinger.digital.Hasher;
+import com.github.tommyettinger.io.VoxIOExtended;
 
 import java.util.Arrays;
 
@@ -667,12 +668,12 @@ public class Tools3D {
                 x >= voxels.length || y >= voxels[x].length || z >= voxels[x][y].length ||
                 voxels[x][y][z] == 0)
             return 0;
-        if(x <= 0 || (v = voxels[x-1][y][z] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 1;
-        if(y <= 0 || (v = voxels[x][y-1][z] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 2;
-        if(z <= 0 || (v = voxels[x][y][z-1] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 3;
-        if(x >= voxels.length - 1       || (v = voxels[x+1][y][z] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 4;
-        if(y >= voxels[x].length - 1    || (v = voxels[x][y+1][z] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 5;
-        if(z >= voxels[x][y].length - 1 || (v = voxels[x][y][z+1] & 255) == 0 || VoxIO.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 6;
+        if(x <= 0 || (v = voxels[x-1][y][z] & 255) == 0 || VoxIOExtended.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 1;
+        if(y <= 0 || (v = voxels[x][y-1][z] & 255) == 0 || VoxIOExtended.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 2;
+        if(z <= 0 || (v = voxels[x][y][z-1] & 255) == 0 || VoxIOExtended.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 3;
+        if(x >= voxels.length - 1       || (v = voxels[x+1][y][z] & 255) == 0 || VoxIOExtended.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 4;
+        if(y >= voxels[x].length - 1    || (v = voxels[x][y+1][z] & 255) == 0 || VoxIOExtended.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 5;
+        if(z >= voxels[x][y].length - 1 || (v = voxels[x][y][z+1] & 255) == 0 || VoxIOExtended.lastMaterials.get(v).getTrait(VoxMaterial.MaterialTrait._alpha) >= 1f) return 6;
         return -1;
     }
 
@@ -715,6 +716,8 @@ public class Tools3D {
     public static byte[][][] soak(byte[][][] voxels)
     {
         final int xs = voxels.length, ys = voxels[0].length, zs = voxels[0][0].length;
+        System.out.printf("xs: %d, ys: %d, zs: %d\n", xs, ys, zs);
+
         byte[][][] next = new byte[xs][ys][zs];
         byte b;
         for (int x = 0; x < xs; x++) {

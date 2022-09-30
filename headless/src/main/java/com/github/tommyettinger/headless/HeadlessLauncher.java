@@ -29,8 +29,8 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "3")
 	public int multiple = 3;
 
-	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Eye-Tyrant.vox")
-	public String input = "Eye-Tyrant.vox";
+	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "FigureSplit.vox")
+	public String input = "FigureSplit.vox";
 
 	public static void main(String[] args) {
 		int exitCode = new picocli.CommandLine(new HeadlessLauncher()).execute(args);
