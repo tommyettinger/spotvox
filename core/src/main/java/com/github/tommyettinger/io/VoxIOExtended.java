@@ -181,30 +181,31 @@ public class VoxIOExtended {
                     } else if (chunkName.equals("XYZI") && voxelData != null) {
                         // XYZI contains n voxels
                         int numVoxels = stream.readInt();
-                        IntObjectMap<float[]> linkage = new IntObjectMap<>(8);
-                        IntObjectMap<LongOrderedSet> markers = new IntObjectMap<>(8);
                         // each voxel has x, y, z and color index values
+                        ShapeModel shp = shapes.get(model.grids.size());
+                        if(shp == null) {
+                            shp = new ShapeModel(model.grids.size(), new String[0][0]);
+                            shapes.put(model.grids.size(), shp);
+                        }
+                        minX = Integer.MAX_VALUE;
+                        minY = Integer.MAX_VALUE;
+                        minZ = Integer.MAX_VALUE;
+                        maxX = 0;
+                        maxY = 0;
+                        maxZ = 0;
+
                         for (int i = 0; i < numVoxels; i++) {
                             int x = stream.read() + offX;
                             int y = stream.read() + offY;
                             int z = stream.read();
                             byte color = stream.readByte();
                             voxelData[x][y][z] = color;
-                            ShapeModel shp = shapes.get(model.grids.size());
-                            if(shp != null) {
-                                shp.minX = minX = Math.min(minX, x);
-                                shp.minY = minY = Math.min(minY, y);
-                                shp.minZ = minZ = Math.min(minZ, z);
-                                shp.maxX = maxX = Math.max(maxX, x);
-                                shp.maxY = maxY = Math.max(maxY, y);
-                                shp.maxZ = maxZ = Math.max(maxZ, z);
-                            }
-                            else {
-                                minX = minY = minZ = 0;
-                                maxX = voxelData.length - 1;
-                                maxY = voxelData[0].length - 1;
-                                maxZ = voxelData[0][0].length - 1;
-                            }
+                            shp.minX = minX = Math.min(minX, x);
+                            shp.minY = minY = Math.min(minY, y);
+                            shp.minZ = minZ = Math.min(minZ, z);
+                            shp.maxX = maxX = Math.max(maxX, x);
+                            shp.maxY = maxY = Math.max(maxY, y);
+                            shp.maxZ = maxZ = Math.max(maxZ, z);
                         }
                         Tools3D.soakInPlace(voxelData);
                         model.grids.add(voxelData);
@@ -260,10 +261,15 @@ public class VoxIOExtended {
                         ShapeModel[] models = new ShapeModel[modelCount];
                         for (int i = 0; i < modelCount; i++) {
                             int shapeID = stream.readInt();
-                            models[i] = new ShapeModel(shapeID, readStringPairs(stream));
+                            String[][] ps = readStringPairs(stream);
+                            if(shapes.containsKey(shapeID))
+                                models[i] = shapes.get(shapeID);
+                            else
+                                models[i] = new ShapeModel(shapeID, ps);
                         }
                         model.shapeChunks.put(chunkID, new ShapeChunk(chunkID, attributes, models));
-                    } else stream.skipBytes(chunkSize);   // read any excess bytes
+                    } else
+                        stream.skipBytes(chunkSize);   // read any excess bytes
                 }
 
             }
