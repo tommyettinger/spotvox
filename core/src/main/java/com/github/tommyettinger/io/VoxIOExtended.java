@@ -150,6 +150,15 @@ public class VoxIOExtended {
         VoxModel model = new VoxModel();
         byte[][][] voxelData = null;
         IntObjectMap<ShapeModel> shapes = new IntObjectMap<>(8);
+        TransformChunk latest = null;
+
+        minX = Integer.MAX_VALUE;
+        minY = Integer.MAX_VALUE;
+        minZ = Integer.MAX_VALUE;
+        maxX = 0;
+        maxY = 0;
+        maxZ = 0;
+
         try {
             byte[] chunkId = new byte[4];
             if (4 != stream.read(chunkId))
@@ -186,12 +195,12 @@ public class VoxIOExtended {
                             shp = new ShapeModel(model.grids.size(), new String[0][0]);
                             shapes.put(model.grids.size(), shp);
                         }
-                        minX = Integer.MAX_VALUE;
-                        minY = Integer.MAX_VALUE;
-                        minZ = Integer.MAX_VALUE;
-                        maxX = 0;
-                        maxY = 0;
-                        maxZ = 0;
+                        shp.minX = Integer.MAX_VALUE;
+                        shp.minY = Integer.MAX_VALUE;
+                        shp.minZ = Integer.MAX_VALUE;
+                        shp.maxX = 0;
+                        shp.maxY = 0;
+                        shp.maxZ = 0;
 
                         for (int i = 0; i < numVoxels; i++) {
                             int x = stream.read() + offX;
@@ -199,12 +208,12 @@ public class VoxIOExtended {
                             int z = stream.read();
                             byte color = stream.readByte();
                             voxelData[x][y][z] = color;
-                            shp.minX = minX = Math.min(minX, x);
-                            shp.minY = minY = Math.min(minY, y);
-                            shp.minZ = minZ = Math.min(minZ, z);
-                            shp.maxX = maxX = Math.max(maxX, x);
-                            shp.maxY = maxY = Math.max(maxY, y);
-                            shp.maxZ = maxZ = Math.max(maxZ, z);
+                            shp.minX = Math.min(shp.minX, x);
+                            shp.minY = Math.min(shp.minY, y);
+                            shp.minZ = Math.min(shp.minZ, z);
+                            shp.maxX = Math.max(shp.maxX, x);
+                            shp.maxY = Math.max(shp.maxY, y);
+                            shp.maxZ = Math.max(shp.maxZ, z);
                         }
                         Tools3D.soakInPlace(voxelData);
                         model.grids.add(voxelData);
@@ -241,7 +250,9 @@ public class VoxIOExtended {
                         for (int i = 0; i < frameCount; i++) {
                             frames[i] = readStringPairs(stream);
                         }
-                        model.transformChunks.put(chunkID, new TransformChunk(chunkID, attributes, childID, reservedID, layerID, frames));
+                        TransformChunk tc = new TransformChunk(chunkID, attributes, childID, reservedID, layerID, frames);
+                        latest = tc;
+                        model.transformChunks.put(chunkID, tc);
                     } else if (chunkName.equals("nGRP")) {
                         int chunkID = stream.readInt();
                         String[][] attributes = readStringPairs(stream);
@@ -265,6 +276,16 @@ public class VoxIOExtended {
                                 models[i] = shapes.get(shapeID);
                             else
                                 models[i] = new ShapeModel(shapeID, ps);
+                            models[i].offsetX = Math.round(latest.translation.x);
+                            models[i].offsetY = Math.round(latest.translation.y);
+                            models[i].offsetZ = Math.round(latest.translation.z);
+                            minX = Math.min(minX, models[i].minX + models[i].offsetX);
+                            minY = Math.min(minY, models[i].minY + models[i].offsetY);
+                            minZ = Math.min(minZ, models[i].minZ + models[i].offsetZ);
+                            maxX = Math.max(maxX, models[i].maxX + models[i].offsetX);
+                            maxY = Math.max(maxY, models[i].maxY + models[i].offsetY);
+                            maxZ = Math.max(maxZ, models[i].maxZ + models[i].offsetZ);
+
                         }
                         model.shapeChunks.put(chunkID, new ShapeChunk(chunkID, attributes, models));
                     } else
@@ -293,7 +314,7 @@ public class VoxIOExtended {
         // check out https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt for the file format used below
         try {
             int xSize = voxelData.length, ySize = voxelData[0].length, zSize = voxelData[0][0].length;
-            Files.createDirectories(Paths.get(filename).getParent());
+            new File(filename).getAbsoluteFile().getParentFile().mkdirs();
             FileOutputStream fos = new FileOutputStream(filename);
             DataOutputStream bin = new DataOutputStream(fos);
             ByteArrayOutputStream voxelsRaw = new ByteArrayOutputStream(0);

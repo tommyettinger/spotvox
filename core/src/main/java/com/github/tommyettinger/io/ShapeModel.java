@@ -7,7 +7,9 @@ public class ShapeModel extends AbstractChunk {
     public int maxY;
     public int minZ = Integer.MAX_VALUE;
     public int maxZ;
-
+    public int offsetX;
+    public int offsetY;
+    public int offsetZ;
     public ShapeModel(){
         attributes = new String[0][0];
     }

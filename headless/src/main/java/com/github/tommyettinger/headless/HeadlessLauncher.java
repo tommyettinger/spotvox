@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.github.tommyettinger.LittleEndianDataInputStream;
 import com.github.tommyettinger.SpotVox;
+import com.github.tommyettinger.Tools3D;
 import com.github.tommyettinger.io.GroupChunk;
 import com.github.tommyettinger.io.ShapeModel;
 import com.github.tommyettinger.io.TransformChunk;
@@ -48,19 +49,19 @@ public class HeadlessLauncher implements Callable<Integer> {
 			input = "../vox/" + input;
 		try {
 			//// loads a file by its full path, which we get via a command-line arg
-			VoxModel voxels = VoxIOExtended.readVox(new LittleEndianDataInputStream(new FileInputStream(input)));
-			if(voxels == null) {
+			VoxModel model = VoxIOExtended.readVox(new LittleEndianDataInputStream(new FileInputStream(input)));
+			if(model == null) {
 				System.out.println("Unable to read input file.");
 				return -1;
 			}
 			if(size < 0) {
 				size = 1;
-				for(GroupChunk gc : voxels.groupChunks.values()) {
+				for(GroupChunk gc : model.groupChunks.values()) {
 					for (int ch : gc.childIds) {
-						TransformChunk tc = voxels.transformChunks.get(ch);
+						TransformChunk tc = model.transformChunks.get(ch);
 						if (tc != null) {
-							for (ShapeModel sm : voxels.shapeChunks.get(tc.childId).models) {
-								byte[][][] g = voxels.grids.get(sm.id);
+							for (ShapeModel sm : model.shapeChunks.get(tc.childId).models) {
+								byte[][][] g = model.grids.get(sm.id);
 								size = Math.max(size, Math.round(tc.translation.x + g.length));
 								size = Math.max(size, Math.round(tc.translation.y + g[0].length));
 								size = Math.max(size, Math.round(tc.translation.z + g[0][0].length * 0.5f));
@@ -69,6 +70,24 @@ public class HeadlessLauncher implements Callable<Integer> {
 					}
 				}
 			}
+
+			byte[][][] voxels = new byte[size][size][size];
+			System.out.printf("Created container 3D array with size %dx%dx%d\n", size, size, size);
+			for(GroupChunk gc : model.groupChunks.values()) {
+				for (int ch : gc.childIds) {
+					TransformChunk tc = model.transformChunks.get(ch);
+					if (tc != null) {
+						for (ShapeModel sm : model.shapeChunks.get(tc.childId).models) {
+							byte[][][] g = model.grids.get(sm.id);
+							Tools3D.translateCopyInto(g, voxels, Math.round(tc.translation.x), Math.round(tc.translation.y), Math.round(tc.translation.z));
+							System.out.println(Tools3D.hash64(voxels) + " with total voxel count " + Tools3D.countNot(voxels, 0));
+						}
+					}
+				}
+			}
+
+//			VoxIOExtended.writeVOX("debugOutput.vox", voxels, VoxIOExtended.lastPalette, VoxIOExtended.lastMaterials);
+
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
