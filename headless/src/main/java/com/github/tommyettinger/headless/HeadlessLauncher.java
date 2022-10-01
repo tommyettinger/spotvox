@@ -4,9 +4,11 @@ import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.github.tommyettinger.LittleEndianDataInputStream;
 import com.github.tommyettinger.SpotVox;
-import com.github.tommyettinger.Tools3D;
-import com.github.tommyettinger.VoxIO;
-import com.github.tommyettinger.io.*;
+import com.github.tommyettinger.io.GroupChunk;
+import com.github.tommyettinger.io.ShapeModel;
+import com.github.tommyettinger.io.TransformChunk;
+import com.github.tommyettinger.io.VoxIOExtended;
+import com.github.tommyettinger.io.VoxModel;
 import picocli.CommandLine;
 
 import java.io.FileInputStream;
@@ -27,8 +29,8 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: heavy, light, partial, none.", defaultValue = "light")
 	public String edge = "light";
 
-	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "3")
-	public int multiple = 3;
+	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "1")
+	public int multiple = 1;
 
 	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "FigureSplit.vox")
 	public String input = "FigureSplit.vox";
@@ -59,8 +61,8 @@ public class HeadlessLauncher implements Callable<Integer> {
 						if (tc != null) {
 							for (ShapeModel sm : voxels.shapeChunks.get(tc.childId).models) {
 								byte[][][] g = voxels.grids.get(sm.id);
-								size = Math.max(size, Math.round(tc.translation.x) + g.length);
-								size = Math.max(size, Math.round(tc.translation.y) + g[0].length);
+								size = Math.max(size, Math.round(tc.translation.x + g.length * 0.5f));
+								size = Math.max(size, Math.round(tc.translation.y + g[0].length* 0.5f));
 								size = Math.max(size, Math.round(tc.translation.z + g[0][0].length * 0.5f));
 							}
 						}

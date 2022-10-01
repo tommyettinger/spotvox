@@ -423,8 +423,6 @@ public class Renderer {
         final int size = colors.length;
         final float hs = (size) * 0.5f;
         final float c = cos_(angleTurns), s = sin_(angleTurns);
-        System.out.printf("Rendering on range x=%d to x=%d, y=%d to y=%d, z=%d to z=%d\n", VoxIOExtended.minX, VoxIOExtended.maxX, VoxIOExtended.minY, VoxIOExtended.maxY, VoxIOExtended.minZ, VoxIOExtended.maxZ);
-        System.out.printf("%d, %d, %d\n", colors.length, colors[0].length, colors[0][0].length);
         for (int z = VoxIOExtended.minZ; z <= VoxIOExtended.maxZ; z++) {
             for (int x = VoxIOExtended.minX; x <= VoxIOExtended.maxX; x++) {
                 for (int y = VoxIOExtended.minY; y <= VoxIOExtended.maxY; y++) {
@@ -457,12 +455,12 @@ public class Renderer {
                 for (int y = VoxIOExtended.minY; y <= VoxIOExtended.maxY; y++) {
                     final byte v = colors[x][y][z];
                     if (v != 0) {
-                        ox = x - hs;
-                        oy = y - hs;
-                        oz = z - hs;
-                        splat(ox * x_x + oy * y_x + oz * z_x + size + translateX,
-                                ox * x_y + oy * y_y + oz * z_y + size + translateY,
-                                ox * x_z + oy * y_z + oz * z_z + hs + translateZ, x, y, z, v);
+                        ox = x - hs + translateX;
+                        oy = y - hs + translateY;
+                        oz = z - hs + translateZ;
+                        splat(  ox * x_x + oy * y_x + oz * z_x + size,
+                                ox * x_y + oy * y_y + oz * z_y + size,
+                                ox * x_z + oy * y_z + oz * z_z + hs  , x, y, z, v);
                     }
                 }
             }
@@ -484,12 +482,13 @@ public class Renderer {
                         VoxIOExtended.maxY = sm.maxY;
                         VoxIOExtended.minZ = sm.minZ;
                         VoxIOExtended.maxZ = sm.maxZ;
-                        System.out.printf("Rendering on range x=%d to x=%d, y=%d to y=%d, z=%d to z=%d\n", VoxIOExtended.minX, VoxIOExtended.maxX, VoxIOExtended.minY, VoxIOExtended.maxY, VoxIOExtended.minZ, VoxIOExtended.maxZ);
-                        System.out.printf("%d, %d, %d\n", g.length, g[0].length, g[0][0].length);
+                        System.out.println("Grid #" + sm.id + ": " + tc.translation);
 
                         splatOnly(g, yaw, pitch, roll,
 //                                translateX, translateY, translateZ
-                                translateX + tc.translation.x, translateY + tc.translation.y, translateZ + tc.translation.z - g[0][0].length * 0.5f
+                                translateX + tc.translation.x - g.length * 0.5f,
+                                translateY + tc.translation.y - g[0].length * 0.5f,
+                                translateZ + tc.translation.z - g[0][0].length * 0.5f
                         );
                     }
                 }

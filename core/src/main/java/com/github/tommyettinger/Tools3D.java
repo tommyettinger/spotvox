@@ -755,8 +755,6 @@ public class Tools3D {
     public static byte[][][] soak(byte[][][] voxels)
     {
         final int xs = voxels.length, ys = voxels[0].length, zs = voxels[0][0].length;
-        System.out.printf("xs: %d, ys: %d, zs: %d\n", xs, ys, zs);
-
         byte[][][] next = new byte[xs][ys][zs];
         byte b;
         for (int x = 0; x < xs; x++) {

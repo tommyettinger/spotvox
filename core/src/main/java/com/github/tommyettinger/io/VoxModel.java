@@ -3,7 +3,6 @@ package com.github.tommyettinger.io;
 import com.github.tommyettinger.Tools3D;
 import com.github.tommyettinger.VoxMaterial;
 import com.github.tommyettinger.ds.IntObjectMap;
-import com.github.tommyettinger.ds.LongOrderedSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
