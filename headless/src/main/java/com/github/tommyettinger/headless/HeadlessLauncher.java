@@ -16,7 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.1",
+@CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.3",
 		description = "Given a .vox file, write pixel art renders to a subfolder.",
 		mixinStandardHelpOptions = true)
 public class HeadlessLauncher implements Callable<Integer> {
@@ -34,7 +34,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 	public int multiple = 3;
 
 	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Copter.vox")
-	public String input = "Eye-Tyrant.vox";
+	public String input = "Copter.vox";
 
 	public static void main(String[] args) {
 		int exitCode = new picocli.CommandLine(new HeadlessLauncher()).execute(args);

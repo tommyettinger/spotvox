@@ -25,7 +25,7 @@ configure(subprojects) {
 }
 
 subprojects {
-	version = '0.0.2'
+	version = '0.0.3'
 	ext.appName = 'spotvox'
 	repositories {
 		mavenCentral()

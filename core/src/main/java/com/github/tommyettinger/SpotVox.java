@@ -6,12 +6,11 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.github.tommyettinger.io.VoxIOExtended;
-import com.github.tommyettinger.io.VoxModel;
 
 import java.io.IOException;
 
 public class SpotVox extends ApplicationAdapter {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public Renderer renderer;
     public String name;
     public byte[][][] voxels;
