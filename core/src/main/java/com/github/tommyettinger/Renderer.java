@@ -486,8 +486,8 @@ public class Renderer {
 
                         splatOnly(g, yaw, pitch, roll,
 //                                translateX, translateY, translateZ
-                                translateX + tc.translation.x - g.length * 0.5f,
-                                translateY + tc.translation.y - g[0].length * 0.5f,
+                                translateX + tc.translation.x,// - g.length * 0.5f,
+                                translateY + tc.translation.y,// - g[0].length * 0.5f,
                                 translateZ + tc.translation.z - g[0][0].length * 0.5f
                         );
                     }
