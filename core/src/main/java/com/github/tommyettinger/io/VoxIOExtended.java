@@ -251,6 +251,7 @@ public class VoxIOExtended {
                             frames[i] = readStringPairs(stream);
                         }
                         TransformChunk tc = new TransformChunk(chunkID, attributes, childID, reservedID, layerID, frames);
+                        tc.translation.z -= sizeZ * 0.5f;
                         latest = tc;
                         model.transformChunks.put(chunkID, tc);
                     } else if (chunkName.equals("nGRP")) {
