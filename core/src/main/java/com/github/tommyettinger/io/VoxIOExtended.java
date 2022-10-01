@@ -187,7 +187,7 @@ public class VoxIOExtended {
                     } else if (chunkName.equals("XYZI") && voxelData != null) {
                         // XYZI contains n voxels
                         int numVoxels = stream.readInt();
-                        // each voxel has x, y, z and color index values
+
                         ShapeModel shp = shapes.get(model.grids.size());
                         if(shp == null) {
                             shp = new ShapeModel(model.grids.size(), new String[0][0]);
@@ -200,6 +200,7 @@ public class VoxIOExtended {
                         shp.maxY = 0;
                         shp.maxZ = 0;
 
+                        // each voxel has x, y, z and color index values
                         for (int i = 0; i < numVoxels; i++) {
                             int x = stream.read() + offX;
                             int y = stream.read() + offY;
@@ -248,10 +249,10 @@ public class VoxIOExtended {
                         for (int i = 0; i < frameCount; i++) {
                             frames[i] = readStringPairs(stream);
                         }
-                        TransformChunk tc = new TransformChunk(chunkID, attributes, childID, reservedID, layerID, frames);
-                        tc.translation.z -= sizeZ * 0.5f;
-                        latest = tc;
-                        model.transformChunks.put(chunkID, tc);
+                        latest = new TransformChunk(chunkID, attributes, childID, reservedID, layerID, frames);
+                        latest.translation.z -= sizeZ * 0.5f;
+
+                        model.transformChunks.put(chunkID, latest);
                     } else if (chunkName.equals("nGRP")) {
                         int chunkID = stream.readInt();
                         String[][] attributes = readStringPairs(stream);
@@ -284,7 +285,6 @@ public class VoxIOExtended {
                             maxX = Math.max(maxX, models[i].maxX + models[i].offsetX);
                             maxY = Math.max(maxY, models[i].maxY + models[i].offsetY);
                             maxZ = Math.max(maxZ, models[i].maxZ + models[i].offsetZ);
-
                         }
                         model.shapeChunks.put(chunkID, new ShapeChunk(chunkID, attributes, models));
                     } else

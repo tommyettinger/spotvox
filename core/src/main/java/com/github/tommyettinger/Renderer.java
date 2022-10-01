@@ -485,7 +485,6 @@ public class Renderer {
                         System.out.println("Grid #" + sm.id + ": " + tc.translation);
 
                         splatOnly(g, yaw, pitch, roll,
-//                                translateX, translateY, translateZ
                                 translateX + tc.translation.x,// - g.length * 0.5f,
                                 translateY + tc.translation.y,// - g[0].length * 0.5f,
                                 translateZ + tc.translation.z - g[0][0].length * 0.5f

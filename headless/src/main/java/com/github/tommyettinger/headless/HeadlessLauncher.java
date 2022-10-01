@@ -54,6 +54,18 @@ public class HeadlessLauncher implements Callable<Integer> {
 				System.out.println("Unable to read input file.");
 				return -1;
 			}
+			int xChange = 0, yChange = 0;
+			if(VoxIOExtended.minX < 0) {
+				xChange = -VoxIOExtended.minX;
+				VoxIOExtended.maxX += xChange;
+				VoxIOExtended.minX = 0;
+			}
+			if(VoxIOExtended.minY < 0) {
+				yChange = -VoxIOExtended.minY;
+				VoxIOExtended.maxY += yChange;
+				VoxIOExtended.minY = 0;
+			}
+
 			if(size < 0) {
 				size = 1;
 				for(GroupChunk gc : model.groupChunks.values()) {
@@ -78,7 +90,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 					if (tc != null) {
 						for (ShapeModel sm : model.shapeChunks.get(tc.childId).models) {
 							byte[][][] g = model.grids.get(sm.id);
-							Tools3D.translateCopyInto(g, voxels, Math.round(tc.translation.x), Math.round(tc.translation.y), Math.round(tc.translation.z));
+							Tools3D.translateCopyInto(g, voxels, Math.round(tc.translation.x + xChange), Math.round(tc.translation.y + yChange), Math.round(tc.translation.z));
 						}
 					}
 				}
