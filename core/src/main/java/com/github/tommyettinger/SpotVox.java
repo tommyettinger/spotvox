@@ -72,12 +72,12 @@ public class SpotVox extends ApplicationAdapter {
                 } else {
                     voxels = Tools3D.blockyScale(voxels);
                 }
-//                VoxIOExtended.minX <<= 1;
-//                VoxIOExtended.minY <<= 1;
-//                VoxIOExtended.minZ <<= 1;
-//                VoxIOExtended.maxX <<= 1;
-//                VoxIOExtended.maxY <<= 1;
-//                VoxIOExtended.maxZ <<= 1;
+                VoxIOExtended.minX <<= 1;
+                VoxIOExtended.minY <<= 1;
+                VoxIOExtended.minZ <<= 1;
+                VoxIOExtended.maxX <<= 1;
+                VoxIOExtended.maxY <<= 1;
+                VoxIOExtended.maxZ <<= 1;
                 renderer = new Renderer(size <<= 1);
                 renderer.palette(VoxIOExtended.lastPalette);
                 renderer.init();

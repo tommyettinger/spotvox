@@ -30,11 +30,11 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: heavy, light, partial, none.", defaultValue = "light")
 	public String edge = "light";
 
-	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "1")
-	public int multiple = 1;
+	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "3")
+	public int multiple = 3;
 
-	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "FigureSplit.vox")
-	public String input = "FigureSplit.vox";
+	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Copter.vox")
+	public String input = "Eye-Tyrant.vox";
 
 	public static void main(String[] args) {
 		int exitCode = new picocli.CommandLine(new HeadlessLauncher()).execute(args);
@@ -72,7 +72,6 @@ public class HeadlessLauncher implements Callable<Integer> {
 			}
 
 			byte[][][] voxels = new byte[size][size][size];
-			System.out.printf("Created container 3D array with size %dx%dx%d\n", size, size, size);
 			for(GroupChunk gc : model.groupChunks.values()) {
 				for (int ch : gc.childIds) {
 					TransformChunk tc = model.transformChunks.get(ch);
@@ -80,7 +79,6 @@ public class HeadlessLauncher implements Callable<Integer> {
 						for (ShapeModel sm : model.shapeChunks.get(tc.childId).models) {
 							byte[][][] g = model.grids.get(sm.id);
 							Tools3D.translateCopyInto(g, voxels, Math.round(tc.translation.x), Math.round(tc.translation.y), Math.round(tc.translation.z));
-							System.out.println(Tools3D.hash64(voxels) + " with total voxel count " + Tools3D.countNot(voxels, 0));
 						}
 					}
 				}
