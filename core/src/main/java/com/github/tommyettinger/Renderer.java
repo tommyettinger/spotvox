@@ -12,7 +12,7 @@ import static com.github.tommyettinger.colorful.oklab.ColorTools.getRawGamutValu
 import static com.github.tommyettinger.digital.ArrayTools.fill;
 
 /**
- * Renders {@code byte[][][]} voxel models to {@link Pixmap}s with arbitrary yaw rotation.
+ * Renders {@code byte[][][]} voxel models to {@link Pixmap}s with arbitrary rotation.
  */
 public class Renderer {
     public Pixmap pixmap;
@@ -487,7 +487,7 @@ public class Renderer {
                         splatOnly(g, yaw, pitch, roll,
                                 translateX + tc.translation.x,// - g.length * 0.5f,
                                 translateY + tc.translation.y,// - g[0].length * 0.5f,
-                                translateZ + tc.translation.z - g[0][0].length * 0.5f
+                                translateZ + tc.translation.z// - g[0][0].length * 0.5f
                         );
                     }
                 }

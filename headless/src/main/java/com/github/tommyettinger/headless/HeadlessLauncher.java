@@ -16,7 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.3",
+@CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.4",
 		description = "Given a .vox file, write pixel art renders to a subfolder.",
 		mixinStandardHelpOptions = true)
 public class HeadlessLauncher implements Callable<Integer> {
@@ -90,11 +90,13 @@ public class HeadlessLauncher implements Callable<Integer> {
 					if (tc != null) {
 						for (ShapeModel sm : model.shapeChunks.get(tc.childId).models) {
 							byte[][][] g = model.grids.get(sm.id);
-							Tools3D.translateCopyInto(g, voxels, Math.round(tc.translation.x + xChange), Math.round(tc.translation.y + yChange), Math.round(tc.translation.z));
+							Tools3D.translateCopyInto(g, voxels, Math.round(tc.translation.x + xChange), Math.round(tc.translation.y + yChange), Math.round(tc.translation.z - VoxIOExtended.minZ));
 						}
 					}
 				}
 			}
+			VoxIOExtended.maxZ -= VoxIOExtended.minZ;
+			VoxIOExtended.minZ = 0;
 
 //			VoxIOExtended.writeVOX("debugOutput.vox", voxels, VoxIOExtended.lastPalette, VoxIOExtended.lastMaterials);
 
