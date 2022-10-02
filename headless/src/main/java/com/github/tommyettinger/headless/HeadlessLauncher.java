@@ -74,9 +74,9 @@ public class HeadlessLauncher implements Callable<Integer> {
 						if (tc != null) {
 							for (ShapeModel sm : model.shapeChunks.get(tc.childId).models) {
 								byte[][][] g = model.grids.get(sm.id);
-								size = Math.max(size, Math.round(tc.translation.x + g.length));
-								size = Math.max(size, Math.round(tc.translation.y + g[0].length));
-								size = Math.max(size, Math.round(tc.translation.z + g[0][0].length * 0.5f));
+								size = Math.max(size, Math.round(tc.translation.x + g.length + xChange));
+								size = Math.max(size, Math.round(tc.translation.y + g[0].length + yChange));
+								size = Math.max(size, Math.round(tc.translation.z + g[0][0].length - VoxIOExtended.minZ));
 							}
 						}
 					}
