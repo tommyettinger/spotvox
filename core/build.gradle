@@ -6,6 +6,7 @@ dependencies {
     api "com.github.yellowstonegames.SquidSquad:SquidCore:$squidSquadVersion"
     api "com.github.yellowstonegames.SquidSquad:SquidGrid:$squidSquadVersion"
     api "com.github.tommyettinger:jdkgdxds:$jdkgdxdsVersion"
+    api "com.github.tommyettinger:anim8-gdx:$anim8Version"
     api "com.github.tommyettinger.colorful-gdx:colorful:$colorfulVersion"
     api 'info.picocli:picocli:4.6.3'
     annotationProcessor 'info.picocli:picocli-codegen:4.6.3'

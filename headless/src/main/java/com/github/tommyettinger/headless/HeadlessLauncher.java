@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 		mixinStandardHelpOptions = true)
 public class HeadlessLauncher implements Callable<Integer> {
 
-	@CommandLine.Option(names = {"-s", "--size"}, description = "The width, height, and depth of the space to place the model into, in voxels.", defaultValue = "-1")
+	@CommandLine.Option(names = {"-s", "--size"}, description = "The width, height, and depth of the space to place the model into, in voxels. Use -1 to have this calculate.", defaultValue = "-1")
 	public int size = -1;
 
 	@CommandLine.Option(names = {"-S", "--saturation"}, description = "A modifier that affects how saturated colors will be; 0 is unchanged, 0.5 is super-bold, and -1 is grayscale.", defaultValue = "0")
@@ -30,11 +30,14 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: heavy, light, partial, none.", defaultValue = "light")
 	public String edge = "light";
 
-	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "3")
+	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "2")
 	public int multiple = 3;
 
-	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Copter.vox")
-	public String input = "Copter.vox";
+	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "24")
+	public int turn = 24;
+
+	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Eye-Tyrant.vox")
+	public String input = "Eye-Tyrant.vox";
 
 	public static void main(String[] args) {
 		int exitCode = new picocli.CommandLine(new HeadlessLauncher()).execute(args);
@@ -54,7 +57,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 				System.out.println("Unable to read input file.");
 				return -1;
 			}
-			int xChange = 0, yChange = 0;
+			int xChange = 0, yChange = 0, zChange = -VoxIOExtended.minZ;
 			if(VoxIOExtended.minX < 0) {
 				xChange = -VoxIOExtended.minX;
 				VoxIOExtended.maxX += xChange;
@@ -76,7 +79,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 								byte[][][] g = model.grids.get(sm.id);
 								size = Math.max(size, Math.round(tc.translation.x + g.length + xChange));
 								size = Math.max(size, Math.round(tc.translation.y + g[0].length + yChange));
-								size = Math.max(size, Math.round(tc.translation.z + g[0][0].length - VoxIOExtended.minZ));
+								size = Math.max(size, Math.round(tc.translation.z + g[0][0].length + zChange));
 							}
 						}
 					}
@@ -90,12 +93,12 @@ public class HeadlessLauncher implements Callable<Integer> {
 					if (tc != null) {
 						for (ShapeModel sm : model.shapeChunks.get(tc.childId).models) {
 							byte[][][] g = model.grids.get(sm.id);
-							Tools3D.translateCopyInto(g, voxels, Math.round(tc.translation.x + xChange), Math.round(tc.translation.y + yChange), Math.round(tc.translation.z - VoxIOExtended.minZ));
+							Tools3D.translateCopyInto(g, voxels, Math.round(tc.translation.x + xChange), Math.round(tc.translation.y + yChange), Math.round(tc.translation.z + zChange));
 						}
 					}
 				}
 			}
-			VoxIOExtended.maxZ -= VoxIOExtended.minZ;
+			VoxIOExtended.maxZ += zChange;
 			VoxIOExtended.minZ = 0;
 
 //			VoxIOExtended.writeVOX("debugOutput.vox", voxels, VoxIOExtended.lastPalette, VoxIOExtended.lastMaterials);
@@ -103,7 +106,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
-			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation), configuration){
+			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn), configuration){
 				{
 					try {
 						mainLoopThread.join();

@@ -7,18 +7,16 @@ import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.github.tommyettinger.anim8.AnimatedGif;
-import com.github.tommyettinger.anim8.Dithered;
-import com.github.tommyettinger.anim8.PaletteReducer;
 import com.github.tommyettinger.io.VoxIOExtended;
 
 import java.io.IOException;
 
-public class SpotVox extends ApplicationAdapter {
-    public static final boolean DEBUG = true;
+import static com.github.tommyettinger.SpotVox.DEBUG;
+
+public class Turntable extends ApplicationAdapter {
     public Renderer renderer;
     public String name;
     public byte[][][] voxels;
-    private PixmapIO.PNG png;
     private AnimatedGif gif;
     public int multiple;
     public int outline;
@@ -26,9 +24,9 @@ public class SpotVox extends ApplicationAdapter {
     public int fps;
     public float saturation;
 
-    public SpotVox() {
+    public Turntable() {
     }
-    public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps) {
+    public Turntable(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
@@ -58,36 +56,23 @@ public class SpotVox extends ApplicationAdapter {
         renderer.init();
         renderer.outline = outline;
         renderer.saturation(saturation);
-        png = new PixmapIO.PNG();
         gif = new AnimatedGif();
-        gif.palette = new PaletteReducer();
-        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.BLUE_NOISE);
         Pixmap pixmap;
         boolean smoothing = multiple > 0;
         multiple = Math.abs(multiple);
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
-            for (int i = 0; i < 8; i++) {
-                pixmap = renderer.drawSplats(voxels, i * 0.125f, 0, 0, 0, 0, 0, VoxIOExtended.lastMaterials);
-                try {
-                    png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            Array<Pixmap> pm = new Array<>(128);
+            for (int i = 0; i < 128; i++) {
+                pixmap = renderer.drawSplats(voxels, i * 0x1p-7f + 0.125f, 0, 0, 0, 0, 0, VoxIOExtended.lastMaterials);
+                Pixmap p = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), pixmap.getFormat());
+                p.drawPixmap(pixmap, 0, 0);
+                pm.add(p);
             }
-            if(fps != 0){
-                Array<Pixmap> pm = new Array<>(128);
-                for (int i = 0; i < 128; i++) {
-                    pixmap = renderer.drawSplats(voxels, i * 0x1p-7f + 0.125f, 0, 0, 0, 0, 0, VoxIOExtended.lastMaterials);
-                    Pixmap p = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), pixmap.getFormat());
-                    p.drawPixmap(pixmap, 0, 0);
-                    pm.add(p);
-                }
-                gif.palette.analyze(pm);
-                gif.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_Turntable.gif"), pm, fps);
-                for (Pixmap pix : pm) {
-                    if (!pix.isDisposed())
-                        pix.dispose();
-                }
+            gif.palette.analyze(pm);
+            gif.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_Turntable.gif"), pm, fps);
+            for (Pixmap pix : pm) {
+                if (!pix.isDisposed())
+                    pix.dispose();
             }
             if(m + 1 < multiple)
             {
