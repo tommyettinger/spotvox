@@ -207,15 +207,15 @@ public class VoxIOExtended {
                             int z = stream.read();
                             byte color = stream.readByte();
                             voxelData[x][y][z] = color;
-                            shp.minX = Math.min(shp.minX, x);
-                            shp.minY = Math.min(shp.minY, y);
-                            shp.minZ = Math.min(shp.minZ, z);
-                            shp.maxX = Math.max(shp.maxX, x);
-                            shp.maxY = Math.max(shp.maxY, y);
-                            shp.maxZ = Math.max(shp.maxZ, z);
                         }
                         Tools3D.soakInPlace(voxelData);
                         model.grids.add(voxelData);
+                        shp.minX = Math.min(shp.minX, 0);
+                        shp.minY = Math.min(shp.minY, 0);
+                        shp.minZ = Math.min(shp.minZ, 0);
+                        shp.maxX = Math.max(shp.maxX, voxelData.length - 1);
+                        shp.maxY = Math.max(shp.maxY, voxelData[0].length - 1);
+                        shp.maxZ = Math.max(shp.maxZ, voxelData[0][0].length - 1);
                     } else if (chunkName.equals("RGBA")) {
                         for (int i = 1; i < 256; i++) {
                             lastPalette[i] = Integer.reverseBytes(stream.readInt());

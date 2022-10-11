@@ -31,7 +31,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 	public String edge = "light";
 
 	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "2")
-	public int multiple = 3;
+	public int multiple = 2;
 
 	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "24")
 	public int turn = 24;
