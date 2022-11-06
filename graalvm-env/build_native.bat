@@ -3,7 +3,6 @@ C:\d\jvm\graal17\bin\native-image.cmd ^
 -H:+ReportExceptionStackTraces ^
 --report-unsupported-elements-at-runtime ^
 --no-fallback ^
---allow-incomplete-classpath ^
 -H:ReflectionConfigurationFiles=config/reflect-config.json ^
 -H:JNIConfigurationFiles=config/jni-config.json ^
 -H:DynamicProxyConfigurationFiles=config/proxy-config.json ^
