@@ -61,7 +61,8 @@ public class SpotVox extends ApplicationAdapter {
         png = new PixmapIO.PNG();
         gif = new AnimatedGif();
         gif.palette = new PaletteReducer();
-        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.BLUE_NOISE);
+        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.ROBERTS);
+        gif.setDitherStrength(0.3f);
         Pixmap pixmap;
         boolean smoothing = multiple > 0;
         multiple = Math.abs(multiple);
@@ -82,7 +83,7 @@ public class SpotVox extends ApplicationAdapter {
                     p.drawPixmap(pixmap, 0, 0);
                     pm.add(p);
                 }
-                gif.palette.analyze(pm);
+                gif.palette.analyze(pm, 75.0, 256);
                 gif.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_Turntable.gif"), pm, fps);
                 for (Pixmap pix : pm) {
                     if (!pix.isDisposed())
