@@ -61,8 +61,8 @@ public class SpotVox extends ApplicationAdapter {
         png = new PixmapIO.PNG();
         gif = new AnimatedGif();
         gif.palette = new PaletteReducer();
-        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.ROBERTS);
-        gif.setDitherStrength(0.3f);
+        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.BLUE_NOISE);
+        gif.setDitherStrength(0.5f);
         Pixmap pixmap;
         boolean smoothing = multiple > 0;
         multiple = Math.abs(multiple);
