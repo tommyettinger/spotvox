@@ -14,7 +14,7 @@ import com.github.tommyettinger.io.VoxIOExtended;
 import java.io.IOException;
 
 public class SpotVox extends ApplicationAdapter {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public Renderer renderer;
     public String name;
     public byte[][][] voxels;
@@ -61,8 +61,8 @@ public class SpotVox extends ApplicationAdapter {
         png = new PixmapIO.PNG();
         gif = new AnimatedGif();
         gif.palette = new PaletteReducer();
-        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.BLUE_NOISE);
-        gif.setDitherStrength(0.5f);
+        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.ROBERTS);
+        gif.setDitherStrength(0.25f);
         Pixmap pixmap;
         boolean smoothing = multiple > 0;
         multiple = Math.abs(multiple);
