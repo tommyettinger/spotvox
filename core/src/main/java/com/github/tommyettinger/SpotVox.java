@@ -45,6 +45,9 @@ public class SpotVox extends ApplicationAdapter {
             case "heavy":
                 outline = 3;
                 break;
+            case "block":
+                outline = 4;
+                break;
             default:
                 outline = 2;
         }

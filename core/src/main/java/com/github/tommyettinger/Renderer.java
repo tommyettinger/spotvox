@@ -391,6 +391,22 @@ public class Renderer {
                         else if (depths[x][y + step] < depth - threshold) {
                             pixmap.drawPixel(hx    , hy + 1, inner);
                         }
+
+                        // block outline, applies to outer only
+                        if(outline >= 4) {
+                            if (outlines[x - step][y - step] == 0) {
+                                pixmap.drawPixel(hx - 1, hy - 1, outer);
+                            }
+                            if (outlines[x + step][y - step] == 0) {
+                                pixmap.drawPixel(hx + 1, hy - 1, outer);
+                            }
+                            if (outlines[x - step][y + step] == 0) {
+                                pixmap.drawPixel(hx - 1, hy + 1, outer);
+                            }
+                            if (outlines[x + step][y + step] == 0) {
+                                pixmap.drawPixel(hx + 1, hy + 1, outer);
+                            }
+                        }
                     }
                 }
             }
