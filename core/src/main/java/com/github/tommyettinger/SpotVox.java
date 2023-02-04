@@ -24,17 +24,21 @@ public class SpotVox extends ApplicationAdapter {
     public int outline;
     public int size;
     public int fps;
+    public int rotations;
+    public float iRotations;
     public float saturation;
 
     public SpotVox() {
     }
-    public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps) {
+    public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps, int rotations) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
         this.saturation = saturation;
         this.multiple = multiple == 0 ? 1 : multiple;
         this.fps = fps;
+        this.rotations = Math.max(1, rotations);
+        iRotations = 1f / this.rotations;
         switch (edge) {
             case "none":
                 outline = 0;
@@ -70,8 +74,8 @@ public class SpotVox extends ApplicationAdapter {
         boolean smoothing = multiple > 0;
         multiple = Math.abs(multiple);
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
-            for (int i = 0; i < 8; i++) {
-                pixmap = renderer.drawSplats(voxels, i * 0.125f, 0, 0, 0, 0, 0, VoxIOExtended.lastMaterials);
+            for (int i = 0; i < rotations; i++) {
+                pixmap = renderer.drawSplats(voxels, i * iRotations, 0, 0, 0, 0, 0, VoxIOExtended.lastMaterials);
                 try {
                     png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                 } catch (IOException e) {
