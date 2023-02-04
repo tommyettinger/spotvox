@@ -23,6 +23,20 @@ Materials are supported; here's a glowing creature at 2x size with smoothing and
 
 ![A magical creature that glows](https://i.imgur.com/v3334jW.png)
 
+You can specify more rotations (or fewer); here's a familiar-looking character at 2x size with smoothing and a block
+outline as an animated GIF, showing 16 rotations:
+
+![Animated person from 16 angles](https://i.imgur.com/XEpby0b.gif)
+
+Viewing these can be a good way to understand what the different edge types mean. Of course, "none" has no outlines,
+but "partial" only has outlines where part of the model extends out and over itself (and nothing is added over the
+empty pixels at the edge of the model). The "light" edge mode does what "partial" does but also draws up to 4 pixels in
+that empty space at the edge, in the same color as the interior edges. Then, "heavy" is like "light" but draws the
+exterior edge (over the empty space) in black. Lastly, "block" is like "heavy" but can draw up to 8 pixels over the
+empty space, producing slightly thicker outlines. One idea for these: You can use "block" or "heavy" for important or
+moving characters/objects, and use "light" or "partial" for background terrain/objects; this makes important things
+stand out from their surroundings.
+
 # Usage
 Download a .zip file from the latest in the [Releases section](https://github.com/tommyettinger/spotvox/releases);
 use windows-x64 if you're on 64-bit Windows (most recent installations are 64-bit), or all-platforms if you aren't.
