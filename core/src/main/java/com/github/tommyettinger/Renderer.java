@@ -30,6 +30,8 @@ public class Renderer {
     public float neutral = 1f;
     public IntObjectMap<VoxMaterial> materialMap;
 
+    public int distortHXY = 2, distoryVXY = 1, distortVZ = 3;
+
     protected Renderer() {
 
     }
@@ -38,7 +40,7 @@ public class Renderer {
     }
 
     public void init(){
-        final int w = size * 4 + 4, h = size * 5 + 4;
+        final int w = size * distortHXY * 2 + 4, h = size * (distortVZ + distoryVXY * 2) + 4;
         pixmap = new Pixmap(w>>>shrink, h>>>shrink, Pixmap.Format.RGBA8888);
         outlines = new int[w][h];
         depths =   new int[w][h];
@@ -163,9 +165,9 @@ public class Renderer {
                 || xPos >= size * 2 || yPos >= size * 2 || zPos >= size * 2)
             return;
         final int 
-                xx = (int)(0.5f + Math.max(0, (size + yPos - xPos) * 2 + 1)),
-                yy = (int)(0.5f + Math.max(0, (zPos * 3 + size * 3 - xPos - yPos) + 1)),
-                depth = (int)(0.5f + (xPos + yPos) * 2 + zPos * 3);
+                xx = (int)(0.5f + Math.max(0, (size + yPos - xPos) * distortHXY + 1)),
+                yy = (int)(0.5f + Math.max(0, (zPos * distortVZ + size * ((distoryVXY + 1) * 2) - distoryVXY * (xPos + yPos)) + 1)),
+                depth = (int)(0.5f + (xPos + yPos) * distortHXY + zPos * distortVZ);
         boolean drawn = false;
         final VoxMaterial m = materialMap.get(voxel & 255);
 //        if(Tools3D.randomizePointRare(vx, vy, vz, frame) < m.getTrait(VoxMaterial.MaterialTrait._metal))

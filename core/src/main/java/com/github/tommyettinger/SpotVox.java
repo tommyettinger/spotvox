@@ -27,12 +27,12 @@ public class SpotVox extends ApplicationAdapter {
     public int rotations;
     public float iRotations;
     public float saturation;
-    public float yaw = 0, pitch = 0, roll = 0;
+    public int distortHXY, distoryVXY, distortVZ;
 
     public SpotVox() {
     }
     public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps,
-                   int rotations, float yaw, float pitch, float roll) {
+                   int rotations, int distortHXY, int distoryVXY, int distortVZ) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
@@ -40,9 +40,9 @@ public class SpotVox extends ApplicationAdapter {
         this.multiple = multiple == 0 ? 1 : multiple;
         this.fps = fps;
         this.rotations = Math.max(1, rotations);
-        this.yaw = yaw / 360f;
-        this.pitch = pitch / 360f;
-        this.roll = roll / 360f;
+        this.distortHXY = distortHXY;
+        this.distoryVXY = distoryVXY;
+        this.distortVZ = distortVZ;
         iRotations = 1f / this.rotations;
         switch (edge) {
             case "none":
@@ -67,6 +67,9 @@ public class SpotVox extends ApplicationAdapter {
         long startTime = TimeUtils.millis();
         renderer = new Renderer(size);
         renderer.palette(VoxIOExtended.lastPalette);
+        renderer.distortHXY = distortHXY;
+        renderer.distoryVXY = distoryVXY;
+        renderer.distortVZ = distortVZ;
         renderer.init();
         renderer.outline = outline;
         renderer.saturation(saturation);
@@ -80,7 +83,7 @@ public class SpotVox extends ApplicationAdapter {
         multiple = Math.abs(multiple);
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
             for (int i = 0; i < rotations; i++) {
-                pixmap = renderer.drawSplats(voxels, i * iRotations + yaw, pitch, roll, 0, 0, 0, VoxIOExtended.lastMaterials);
+                pixmap = renderer.drawSplats(voxels, i * iRotations, 0, 0, 0, 0, 0, VoxIOExtended.lastMaterials);
                 try {
                     png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                 } catch (IOException e) {
@@ -90,7 +93,7 @@ public class SpotVox extends ApplicationAdapter {
             if(fps != 0){
                 Array<Pixmap> pm = new Array<>(128);
                 for (int i = 0; i < 128; i++) {
-                    pixmap = renderer.drawSplats(voxels, i * 0x1p-7f + 0.125f + yaw, pitch, roll, 0, 0, 0, VoxIOExtended.lastMaterials);
+                    pixmap = renderer.drawSplats(voxels, i * 0x1p-7f + 0.125f, 0, 0, 0, 0, 0, VoxIOExtended.lastMaterials);
                     Pixmap p = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), pixmap.getFormat());
                     p.drawPixmap(pixmap, 0, 0);
                     pm.add(p);
@@ -117,6 +120,9 @@ public class SpotVox extends ApplicationAdapter {
                 VoxIOExtended.maxZ <<= 1;
                 renderer = new Renderer(size <<= 1);
                 renderer.palette(VoxIOExtended.lastPalette);
+                renderer.distortHXY = distortHXY;
+                renderer.distoryVXY = distoryVXY;
+                renderer.distortVZ = distortVZ;
                 renderer.init();
                 renderer.outline = outline;
                 renderer.saturation(saturation);

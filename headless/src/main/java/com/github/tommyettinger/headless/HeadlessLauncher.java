@@ -35,14 +35,14 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-r", "--rotations"}, description = "How many different rotations to render at each size; can be 1 or higher.", defaultValue = "8")
 	public int rotations = 8;
 
-	@CommandLine.Option(names = {"--yaw"}, description = "Added to the yaw rotation, in degrees. May be a decimal.", defaultValue = "0")
-	public float yaw = 0;
+	@CommandLine.Option(names = {"--horizontal-xy"}, description = "Modifies the projection; isometric uses 2.", defaultValue = "2")
+	public int distortHXY = 2;
 
-	@CommandLine.Option(names = {"--pitch"}, description = "Added to the pitch rotation, in degrees. May be a decimal.", defaultValue = "-30")
-	public float pitch = 0;
+	@CommandLine.Option(names = {"--vertical-xy"}, description = "Modifies the projection; isometric uses 1.", defaultValue = "1")
+	public int distortVXY = 1;
 
-	@CommandLine.Option(names = {"--roll"}, description = "Added to the roll rotation, in degrees. May be a decimal.", defaultValue = "-30")
-	public float roll = 0;
+	@CommandLine.Option(names = {"--vertical-z"}, description = "Modifies the projection; isometric uses 3.", defaultValue = "3")
+	public int distortVZ = 3;
 
 	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Eye-Tyrant.vox")
 	public String input = "Eye-Tyrant.vox";
@@ -114,7 +114,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
-			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations, yaw, pitch, roll), configuration){
+			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations, distortHXY, distortVXY, distortVZ), configuration){
 				{
 					try {
 						mainLoopThread.join();
