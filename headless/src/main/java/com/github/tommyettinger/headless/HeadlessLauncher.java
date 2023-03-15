@@ -5,18 +5,14 @@ import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.github.tommyettinger.LittleEndianDataInputStream;
 import com.github.tommyettinger.SpotVox;
 import com.github.tommyettinger.Tools3D;
-import com.github.tommyettinger.io.GroupChunk;
-import com.github.tommyettinger.io.ShapeModel;
-import com.github.tommyettinger.io.TransformChunk;
-import com.github.tommyettinger.io.VoxIOExtended;
-import com.github.tommyettinger.io.VoxModel;
+import com.github.tommyettinger.io.*;
 import picocli.CommandLine;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.6",
+@CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.7",
 		description = "Given a .vox file, write pixel art renders to a subfolder.",
 		mixinStandardHelpOptions = true)
 public class HeadlessLauncher implements Callable<Integer> {
@@ -33,11 +29,20 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "2")
 	public int multiple = 2;
 
-	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "0")
+	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "16")
 	public int turn = 0;
 
 	@CommandLine.Option(names = {"-r", "--rotations"}, description = "How many different rotations to render at each size; can be 1 or higher.", defaultValue = "8")
 	public int rotations = 8;
+
+	@CommandLine.Option(names = {"--yaw"}, description = "Added to the yaw rotation, in degrees. May be a decimal.", defaultValue = "0")
+	public float yaw = 0;
+
+	@CommandLine.Option(names = {"--pitch"}, description = "Added to the pitch rotation, in degrees. May be a decimal.", defaultValue = "45")
+	public float pitch = 0;
+
+	@CommandLine.Option(names = {"--roll"}, description = "Added to the roll rotation, in degrees. May be a decimal.", defaultValue = "0")
+	public float roll = 0;
 
 	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Eye-Tyrant.vox")
 	public String input = "Eye-Tyrant.vox";
@@ -109,7 +114,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
-			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations), configuration){
+			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations, yaw, pitch, roll), configuration){
 				{
 					try {
 						mainLoopThread.join();
