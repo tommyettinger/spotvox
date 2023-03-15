@@ -251,9 +251,14 @@ public class Renderer {
         final float cYaw = cos_(yaw), sYaw = sin_(yaw);
         final float cPitch = cos_(pitch), sPitch = sin_(pitch);
         final float cRoll = cos_(roll), sRoll = sin_(roll);
-        final float x_x = cYaw * cPitch, y_x = cYaw * sPitch * sRoll - sYaw * cRoll, z_x = cYaw * sPitch * cRoll + sYaw * sRoll;
-        final float x_y = sYaw * cPitch, y_y = sYaw * sPitch * sRoll + cYaw * cRoll, z_y = sYaw * sPitch * cRoll - cYaw * sRoll;
-        final float x_z = -sPitch, y_z = cPitch * sRoll, z_z = cPitch * cRoll;
+        // corresponds to Tait-Bryan angles for X1Y2Z3
+        final float x_x = cPitch * cRoll, y_x = -cPitch * sRoll, z_x = sPitch;
+        final float x_y = cYaw * sRoll + cRoll * sYaw * sPitch, y_y = cYaw * cRoll - sYaw * sPitch * sRoll, z_y = -cPitch * sYaw;
+        final float x_z = sYaw * sRoll - cYaw * cRoll * sPitch, y_z = cRoll * sYaw + cYaw * sPitch * sRoll, z_z = cYaw * cPitch;
+        // corresponds to Tait-Bryan angles for Z1Y2X3
+//        final float x_x = cYaw * cPitch, y_x = cYaw * sPitch * sRoll - sYaw * cRoll, z_x = cYaw * sPitch * cRoll + sYaw * sRoll;
+//        final float x_y = sYaw * cPitch, y_y = sYaw * sPitch * sRoll + cYaw * cRoll, z_y = sYaw * sPitch * cRoll - cYaw * sRoll;
+//        final float x_z = -sPitch, y_z = cPitch * sRoll, z_z = cPitch * cRoll;
         VoxMaterial m;
         final int step = 1 << shrink;
         for (int sx = 0; sx <= xSize; sx++) {
@@ -434,9 +439,14 @@ public class Renderer {
         final float cYaw = cos_(yaw), sYaw = sin_(yaw);
         final float cPitch = cos_(pitch), sPitch = sin_(pitch);
         final float cRoll = cos_(roll), sRoll = sin_(roll);
-        final float x_x = cYaw * cPitch, y_x = cYaw * sPitch * sRoll - sYaw * cRoll, z_x = cYaw * sPitch * cRoll + sYaw * sRoll;
-        final float x_y = sYaw * cPitch, y_y = sYaw * sPitch * sRoll + cYaw * cRoll, z_y = sYaw * sPitch * cRoll - cYaw * sRoll;
-        final float x_z = -sPitch, y_z = cPitch * sRoll, z_z = cPitch * cRoll;
+        // corresponds to Tait-Bryan angles for X1Y2Z3
+        final float x_x = cPitch * cRoll, y_x = -cPitch * sRoll, z_x = sPitch;
+        final float x_y = cYaw * sRoll + cRoll * sYaw * sPitch, y_y = cYaw * cRoll - sYaw * sPitch * sRoll, z_y = -cPitch * sYaw;
+        final float x_z = sYaw * sRoll - cYaw * cRoll * sPitch, y_z = cRoll * sYaw + cYaw * sPitch * sRoll, z_z = cYaw * cPitch;
+        // corresponds to Tait-Bryan angles for Z1Y2X3
+//        final float x_x = cYaw * cPitch, y_x = cYaw * sPitch * sRoll - sYaw * cRoll, z_x = cYaw * sPitch * cRoll + sYaw * sRoll;
+//        final float x_y = sYaw * cPitch, y_y = sYaw * sPitch * sRoll + cYaw * cRoll, z_y = sYaw * sPitch * cRoll - cYaw * sRoll;
+//        final float x_z = -sPitch, y_z = cPitch * sRoll, z_z = cPitch * cRoll;
         for (int z = VoxIOExtended.minZ; z <= VoxIOExtended.maxZ; z++) {
             for (int x = VoxIOExtended.minX; x <= VoxIOExtended.maxX; x++) {
                 for (int y = VoxIOExtended.minY; y <= VoxIOExtended.maxY; y++) {

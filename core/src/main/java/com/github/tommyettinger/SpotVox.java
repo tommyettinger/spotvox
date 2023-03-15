@@ -80,7 +80,7 @@ public class SpotVox extends ApplicationAdapter {
         multiple = Math.abs(multiple);
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
             for (int i = 0; i < rotations; i++) {
-                pixmap = renderer.drawSplats(voxels, i * iRotations, 0, 0, 0, 0, 0, VoxIOExtended.lastMaterials);
+                pixmap = renderer.drawSplats(voxels, i * iRotations + yaw, pitch, roll, 0, 0, 0, VoxIOExtended.lastMaterials);
                 try {
                     png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                 } catch (IOException e) {
