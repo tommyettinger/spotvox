@@ -27,12 +27,12 @@ public class SpotVox extends ApplicationAdapter {
     public int rotations;
     public float iRotations;
     public float saturation;
-    public int distortHXY, distoryVXY, distortVZ;
+    public float distortHXY, distortVXY, distortVZ;
 
     public SpotVox() {
     }
     public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps,
-                   int rotations, int distortHXY, int distoryVXY, int distortVZ) {
+                   int rotations, float distortHXY, float distortVXY, float distortVZ) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
@@ -41,7 +41,7 @@ public class SpotVox extends ApplicationAdapter {
         this.fps = fps;
         this.rotations = Math.max(1, rotations);
         this.distortHXY = distortHXY;
-        this.distoryVXY = distoryVXY;
+        this.distortVXY = distortVXY;
         this.distortVZ = distortVZ;
         iRotations = 1f / this.rotations;
         switch (edge) {
@@ -68,7 +68,7 @@ public class SpotVox extends ApplicationAdapter {
         renderer = new Renderer(size);
         renderer.palette(VoxIOExtended.lastPalette);
         renderer.distortHXY = distortHXY;
-        renderer.distoryVXY = distoryVXY;
+        renderer.distoryVXY = distortVXY;
         renderer.distortVZ = distortVZ;
         renderer.init();
         renderer.outline = outline;
@@ -121,7 +121,7 @@ public class SpotVox extends ApplicationAdapter {
                 renderer = new Renderer(size <<= 1);
                 renderer.palette(VoxIOExtended.lastPalette);
                 renderer.distortHXY = distortHXY;
-                renderer.distoryVXY = distoryVXY;
+                renderer.distoryVXY = distortVXY;
                 renderer.distortVZ = distortVZ;
                 renderer.init();
                 renderer.outline = outline;

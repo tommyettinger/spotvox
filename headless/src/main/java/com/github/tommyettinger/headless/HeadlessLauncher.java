@@ -36,13 +36,13 @@ public class HeadlessLauncher implements Callable<Integer> {
 	public int rotations = 8;
 
 	@CommandLine.Option(names = {"--horizontal-xy"}, description = "Modifies the projection; isometric uses 2.", defaultValue = "2")
-	public int distortHXY = 2;
+	public float distortHXY = 2;
 
-	@CommandLine.Option(names = {"--vertical-xy"}, description = "Modifies the projection; isometric uses 1.", defaultValue = "1")
-	public int distortVXY = 1;
+	@CommandLine.Option(names = {"--vertical-xy"}, description = "Modifies the projection; isometric uses 1.", defaultValue = "1.5")
+	public float distortVXY = 1;
 
-	@CommandLine.Option(names = {"--vertical-z"}, description = "Modifies the projection; isometric uses 3.", defaultValue = "3")
-	public int distortVZ = 3;
+	@CommandLine.Option(names = {"--vertical-z"}, description = "Modifies the projection; isometric uses 3.", defaultValue = "2.5")
+	public float distortVZ = 3;
 
 	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Eye-Tyrant.vox")
 	public String input = "Eye-Tyrant.vox";
