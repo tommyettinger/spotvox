@@ -38,10 +38,10 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"--yaw"}, description = "Added to the yaw rotation, in degrees. May be a decimal.", defaultValue = "0")
 	public float yaw = 0;
 
-	@CommandLine.Option(names = {"--pitch"}, description = "Added to the pitch rotation, in degrees. May be a decimal.", defaultValue = "45")
+	@CommandLine.Option(names = {"--pitch"}, description = "Added to the pitch rotation, in degrees. May be a decimal.", defaultValue = "-30")
 	public float pitch = 0;
 
-	@CommandLine.Option(names = {"--roll"}, description = "Added to the roll rotation, in degrees. May be a decimal.", defaultValue = "0")
+	@CommandLine.Option(names = {"--roll"}, description = "Added to the roll rotation, in degrees. May be a decimal.", defaultValue = "-30")
 	public float roll = 0;
 
 	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Eye-Tyrant.vox")
