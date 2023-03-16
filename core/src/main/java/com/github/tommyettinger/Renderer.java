@@ -2,6 +2,8 @@ package com.github.tommyettinger;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix3;
+import com.badlogic.gdx.math.Vector3;
 import com.github.tommyettinger.colorful.oklab.ColorTools;
 import com.github.tommyettinger.digital.TrigTools;
 import com.github.tommyettinger.ds.IntObjectMap;
@@ -9,6 +11,7 @@ import com.github.tommyettinger.io.*;
 
 import java.util.Arrays;
 
+import static com.badlogic.gdx.math.Matrix3.*;
 import static com.github.tommyettinger.colorful.oklab.ColorTools.getRawGamutValue;
 import static com.github.tommyettinger.digital.ArrayTools.fill;
 
@@ -31,6 +34,19 @@ public class Renderer {
     public IntObjectMap<VoxMaterial> materialMap;
 
     public float distortHXY = 2, distoryVXY = 1, distortVZ = 3;
+
+    private Matrix3 inputMatrix = new Matrix3();
+    private float[] sobelXArray = new float[]{
+            +1.0f, +2.0f, +1.0f,
+            +0.0f, +0.0f, +0.0f,
+            -1.0f, -2.0f, -1.0f};
+    private float[] sobelYArray = new float[]{
+            +1.0f, +0.0f, -1.0f,
+            +2.0f, +0.0f, -2.0f,
+            +1.0f, +0.0f, -1.0f
+    };
+    private Matrix3 sobelXMatrix = new Matrix3();
+    private Matrix3 sobelYMatrix = new Matrix3();
 
     protected Renderer() {
 
@@ -119,6 +135,38 @@ public class Renderer {
 //        return turns * (-0.775f - 0.225f * turns) * ((floor & 2L) - 1L);
 //    }
 
+    /**
+     * Applies a Sobel filter to a given x,y point in the already-computed depths 2D array, placing the result in the
+     * given Vector3 and returning it.
+     * <a href="https://forum.unity.com/threads/sobel-operator-height-to-normal-map-on-gpu.33159/">Thanks to apple_motion for writing the basis for this</a>.
+     * @param out will be modified to receive the output
+     * @param x x position in depths
+     * @param y y position in depths
+     * @return out, after modifications
+     */
+    public Vector3 sobel(Vector3 out, int x, int y) {
+        float invMaxDepth = 1f / (0.5f + (size + size) * distortHXY + size * distortVZ);
+        inputMatrix.val[M00] = (x < 1 || y < 1) ? 0 : depths[x-1][y-1] * invMaxDepth;
+        inputMatrix.val[M01] = (y < 1) ? 0 : depths[x][y-1] * invMaxDepth;
+        inputMatrix.val[M02] = (x >= depths.length - 1 || y < 1) ? 0 : depths[x+1][y-1] * invMaxDepth;
+        inputMatrix.val[M10] = (x < 1) ? 0 : depths[x-1][y] * invMaxDepth;
+        inputMatrix.val[M11] = depths[x][y] * invMaxDepth;
+        inputMatrix.val[M12] = (x >= depths.length - 1) ? 0 : depths[x+1][y] * invMaxDepth;
+        inputMatrix.val[M20] = (x < 1 || y >= depths[0].length - 1) ? 0 : depths[x-1][y+1] * invMaxDepth;
+        inputMatrix.val[M21] = (y >= depths[0].length - 1) ? 0 : depths[x][y+1] * invMaxDepth;
+        inputMatrix.val[M22] = (x >= depths.length - 1 || y >= depths[0].length - 1) ? 0 : depths[x+1][y+1] * invMaxDepth;
+
+        sobelXMatrix.set(sobelXArray).mul(inputMatrix);
+        sobelYMatrix.set(sobelYArray).mul(inputMatrix);
+
+        float cx = sobelXMatrix.val[M00] + sobelXMatrix.val[M10] + sobelXMatrix.val[M20] +
+                sobelXMatrix.val[M02] + sobelXMatrix.val[M12] + sobelXMatrix.val[M22];
+        float cy = sobelYMatrix.val[M00] + sobelYMatrix.val[M01] + sobelYMatrix.val[M02] +
+                sobelYMatrix.val[M20] + sobelYMatrix.val[M21] + sobelYMatrix.val[M22];
+        float cz = (float) Math.sqrt(1f - (cx*cx+cy*cy));
+        out.set(cx, cy, cz);
+        return out;
+    }
     /**
      * Takes a modifier between -1f and 0.5f, and adjusts how this changes saturation accordingly.
      * Negative modifiers will decrease saturation, while positive ones increase it. If positive, any
