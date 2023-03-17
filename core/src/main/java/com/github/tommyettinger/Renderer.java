@@ -1,5 +1,6 @@
 package com.github.tommyettinger;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix3;
@@ -20,6 +21,8 @@ import static com.github.tommyettinger.digital.ArrayTools.fill;
  */
 public class Renderer {
     public Pixmap pixmap;
+    public Pixmap normalMap;
+    public boolean normals;
     public int[][] depths;
     public int[][] voxels;
     public int[][] outlines;
@@ -58,6 +61,8 @@ public class Renderer {
     public void init(){
         final int w = (int)Math.ceil(size * distortHXY * 2 + 4), h = (int)Math.ceil(size * (distortVZ + distoryVXY * 2) + 4);
         pixmap = new Pixmap(w>>>shrink, h>>>shrink, Pixmap.Format.RGBA8888);
+        if(normals)
+            normalMap = new Pixmap(w>>>shrink, h>>>shrink, Pixmap.Format.RGBA8888);
         outlines = new int[w][h];
         depths =   new int[w][h];
         materials = new VoxMaterial[w][h];
@@ -136,15 +141,17 @@ public class Renderer {
 //    }
 
     /**
-     * Applies a Sobel filter to a given x,y point in the already-computed depths 2D array, placing the result in the
-     * given Vector3 and returning it.
+     * Applies a Sobel filter to a given x,y point in the already-computed depths 2D array, returning an RGBA8888 color
+     * representing a normal. The blue channel of the color represents the axis of the normal vector that points toward
+     * the camera, the green channel up, and the red channel right.
      * <a href="https://forum.unity.com/threads/sobel-operator-height-to-normal-map-on-gpu.33159/">Thanks to apple_motion for writing the basis for this</a>.
-     * @param out will be modified to receive the output
      * @param x x position in depths
      * @param y y position in depths
-     * @return out, after modifications
+     * @return an RGBA8888 color representing a normal where blue points at the camera, green points up, and red points right
      */
-    public Vector3 sobel(Vector3 out, int x, int y) {
+    public int sobel(int x, int y) {
+        if(colorL[x][y] == -1) return 0;
+
         float invMaxDepth = 1f / (0.5f + (size + size) * distortHXY + size * distortVZ);
         inputMatrix.val[M00] = (x < 1 || y < 1) ? 0 : depths[x-1][y-1] * invMaxDepth;
         inputMatrix.val[M01] = (y < 1) ? 0 : depths[x][y-1] * invMaxDepth;
@@ -164,8 +171,7 @@ public class Renderer {
         float cy = sobelYMatrix.val[M00] + sobelYMatrix.val[M01] + sobelYMatrix.val[M02] +
                 sobelYMatrix.val[M20] + sobelYMatrix.val[M21] + sobelYMatrix.val[M22];
         float cz = (float) Math.sqrt(1f - (cx*cx+cy*cy));
-        out.set(cx, cy, cz);
-        return out;
+        return Color.rgba8888(cx, cy, cz, 1f);
     }
     /**
      * Takes a modifier between -1f and 0.5f, and adjusts how this changes saturation accordingly.

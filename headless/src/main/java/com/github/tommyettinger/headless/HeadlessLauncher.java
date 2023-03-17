@@ -32,6 +32,9 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "16")
 	public int turn = 0;
 
+	@CommandLine.Option(names = {"-n", "--normals"}, description = "If true, this will output a normal-map image for each non-animated output image.", defaultValue = "true")
+	public boolean normals = false;
+
 	@CommandLine.Option(names = {"-r", "--rotations"}, description = "How many different rotations to render at each size; can be 1 or higher.", defaultValue = "8")
 	public int rotations = 8;
 
@@ -114,7 +117,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
-			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations, distortHXY, distortVXY, distortVZ), configuration){
+			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations, distortHXY, distortVXY, distortVZ, normals), configuration){
 				{
 					try {
 						mainLoopThread.join();

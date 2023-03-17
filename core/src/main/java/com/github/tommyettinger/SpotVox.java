@@ -28,11 +28,12 @@ public class SpotVox extends ApplicationAdapter {
     public float iRotations;
     public float saturation;
     public float distortHXY, distortVXY, distortVZ;
+    public boolean normals;
 
     public SpotVox() {
     }
     public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps,
-                   int rotations, float distortHXY, float distortVXY, float distortVZ) {
+                   int rotations, float distortHXY, float distortVXY, float distortVZ, boolean normals) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
@@ -43,6 +44,7 @@ public class SpotVox extends ApplicationAdapter {
         this.distortHXY = distortHXY;
         this.distortVXY = distortVXY;
         this.distortVZ = distortVZ;
+        this.normals = normals;
         iRotations = 1f / this.rotations;
         switch (edge) {
             case "none":
@@ -70,6 +72,7 @@ public class SpotVox extends ApplicationAdapter {
         renderer.distortHXY = distortHXY;
         renderer.distoryVXY = distortVXY;
         renderer.distortVZ = distortVZ;
+        renderer.normals = normals;
         renderer.init();
         renderer.outline = outline;
         renderer.saturation(saturation);
@@ -123,6 +126,7 @@ public class SpotVox extends ApplicationAdapter {
                 renderer.distortHXY = distortHXY;
                 renderer.distoryVXY = distortVXY;
                 renderer.distortVZ = distortVZ;
+                renderer.normals = normals;
                 renderer.init();
                 renderer.outline = outline;
                 renderer.saturation(saturation);
