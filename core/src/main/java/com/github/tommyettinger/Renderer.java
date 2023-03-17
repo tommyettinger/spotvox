@@ -146,7 +146,8 @@ public class Renderer {
      * Applies a Sobel filter to a given x,y point in the already-computed depths 2D array, returning an RGBA8888 color
      * representing a normal. The blue channel of the color represents the axis of the normal vector that points toward
      * the camera, the green channel up, and the red channel right.
-     * <a href="https://forum.unity.com/threads/sobel-operator-height-to-normal-map-on-gpu.33159/">Thanks to apple_motion for writing the basis for this</a>.
+     * <a href="https://forum.unity.com/threads/sobel-operator-height-to-normal-map-on-gpu.33159/">Thanks to apple_motion for writing the initial basis for this</a>,
+     * and <a href="https://gamedev.stackexchange.com/q/165575">Jarrett on the game dev StackExchange for providing a working solution.</a>
      * @param x x position in depths
      * @param y y position in depths
      * @return an RGBA8888 color representing a normal where blue points at the camera, green points up, and red points right
@@ -154,7 +155,7 @@ public class Renderer {
     public int sobel(int x, int y) {
         if(colorL[x][y] == -1) return 0;
         int[][] data = this.depths;
-        float maxDepth = (0.5f + (size + size) * distortHXY + size * distortVZ);
+        float maxDepth = 1.5f * (0.5f + (size + size) * distortHXY + size * distortVZ);
 //        float maxDepth = size;
         float invMaxDepth = 1f / maxDepth;
         final int u = 1 << shrink;
@@ -179,47 +180,73 @@ public class Renderer {
 //        inputMatrix.val[M21] = (y >= data[0].length - u) ? 0 : (data[x][y+u]>>>20) * invMaxDepth;
 //        inputMatrix.val[M22] = (x >= data.length - u || y >= data[0].length - u) ? 0 : (data[x+u][y+u]>>>20) * invMaxDepth;
 
-        inputMatrix.val[M00] = (x < u || y < u) ? 0 : (data[x-u][y-u]>>>0) * invMaxDepth;
-        inputMatrix.val[M01] = (y < u) ? 0 : (data[x][y-u]>>>0) * invMaxDepth;
-        inputMatrix.val[M02] = (x >= data.length - u || y < u) ? 0 : (data[x+u][y-u]>>>0) * invMaxDepth;
-        inputMatrix.val[M10] = (x < u) ? 0 : (data[x-u][y]>>>0) * invMaxDepth;
-        inputMatrix.val[M11] = (data[x][y]>>>0) * invMaxDepth;
-        inputMatrix.val[M12] = (x >= data.length - u) ? 0 : (data[x+u][y]>>>0) * invMaxDepth;
-        inputMatrix.val[M20] = (x < u || y >= data[0].length - u) ? 0 : (data[x-u][y+u]>>>0) * invMaxDepth;
-        inputMatrix.val[M21] = (y >= data[0].length - u) ? 0 : (data[x][y+u]>>>0) * invMaxDepth;
-        inputMatrix.val[M22] = (x >= data.length - u || y >= data[0].length - u) ? 0 : (data[x+u][y+u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M00] = (x < u || y < u) ? 0 : (data[x-u][y-u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M01] = (y < u) ? 0 : (data[x][y-u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M02] = (x >= data.length - u || y < u) ? 0 : (data[x+u][y-u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M10] = (x < u) ? 0 : (data[x-u][y]>>>0) * invMaxDepth;
+//        inputMatrix.val[M11] = (data[x][y]>>>0) * invMaxDepth;
+//        inputMatrix.val[M12] = (x >= data.length - u) ? 0 : (data[x+u][y]>>>0) * invMaxDepth;
+//        inputMatrix.val[M20] = (x < u || y >= data[0].length - u) ? 0 : (data[x-u][y+u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M21] = (y >= data[0].length - u) ? 0 : (data[x][y+u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M22] = (x >= data.length - u || y >= data[0].length - u) ? 0 : (data[x+u][y+u]>>>0) * invMaxDepth;
+//
+//        inputMatrix.val[M00] = (x < u || y < u) ? 0 : (data[x-u][y-u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M10] = (x < u) ? 0 : (data[x-u][y]>>>0) * invMaxDepth;
+//        inputMatrix.val[M20] = (x < u || y >= data[0].length - u) ? 0 : (data[x-u][y+u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M01] = (y < u) ? 0 : (data[x][y-u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M11] = (data[x][y]>>>0) * invMaxDepth;
+//        inputMatrix.val[M21] = (y >= data[0].length - u) ? 0 : (data[x][y+u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M02] = (x >= data.length - u || y < u) ? 0 : (data[x+u][y-u]>>>0) * invMaxDepth;
+//        inputMatrix.val[M12] = (x >= data.length - u) ? 0 : (data[x+u][y]>>>0) * invMaxDepth;
+//        inputMatrix.val[M22] = (x >= data.length - u || y >= data[0].length - u) ? 0 : (data[x+u][y+u]>>>0) * invMaxDepth;
+//
+//        sobelXMatrix.set(sobelXArray).mul(inputMatrix);
+//
+//        float cx = (
+//                sobelXMatrix.val[M00] +
+//                sobelXMatrix.val[M10] +
+//                sobelXMatrix.val[M20] +
+//                sobelXMatrix.val[M02] +
+//                sobelXMatrix.val[M12] +
+//                sobelXMatrix.val[M22]);
+//
+//        sobelYMatrix.set(sobelYArray).mul(inputMatrix);
+//
+//        float cy = (
+//                sobelYMatrix.val[M00] +
+//                sobelYMatrix.val[M01] +
+//                sobelYMatrix.val[M02] +
+//                sobelYMatrix.val[M20] +
+//                sobelYMatrix.val[M21] +
+//                sobelYMatrix.val[M22]);
+//
+//        float cz = (float) Math.sqrt(1f - Math.min(Math.max(cx*cx+cy*cy, 0f), 1f));
 
-        sobelXMatrix.set(sobelXArray).mul(inputMatrix);
+        float tl = (x < u || y < u) ? 0 : (data[x-u][y-u]>>>0) * invMaxDepth;                    // top left
+        float  l = (x < u) ? 0 : (data[x-u][y]>>>0) * invMaxDepth;                               // left
+        float bl = (x < u || y >= data[0].length - u) ? 0 : (data[x-u][y+u]>>>0) * invMaxDepth;  // bottom left
+        float  t = (y < u) ? 0 : (data[x][y-u]>>>0) * invMaxDepth;                               // top
+        float  b = (data[x][y]>>>0) * invMaxDepth;                                               // bottom
+        float tr = (y >= data[0].length - u) ? 0 : (data[x][y+u]>>>0) * invMaxDepth;             // top right
+        float  r = (x >= data.length - u || y < u) ? 0 : (data[x+u][y-u]>>>0) * invMaxDepth;     // right
+        float br = (x >= data.length - u) ? 0 : (data[x+u][y]>>>0) * invMaxDepth;                // bottom right
 
-        float cx = (
-                sobelXMatrix.val[M00] +
-                sobelXMatrix.val[M10] +
-                sobelXMatrix.val[M20] +
-                sobelXMatrix.val[M02] +
-                sobelXMatrix.val[M12] +
-                sobelXMatrix.val[M22]);
 
-        sobelYMatrix.set(sobelYArray).mul(inputMatrix);
+        // sobel filter
+        float cx = (tl + l + l + bl) - (tr + r + r + br);
+        float cy = (tl + t + t + tr) - (bl + b + b + br);
+        float cz = 0.125f; // float strength = 8f;
 
-        float cy = (
-                sobelYMatrix.val[M00] +
-                sobelYMatrix.val[M01] +
-                sobelYMatrix.val[M02] +
-                sobelYMatrix.val[M20] +
-                sobelYMatrix.val[M21] +
-                sobelYMatrix.val[M22]);
-
-        float cz = (float) Math.sqrt(1f - Math.min(Math.max(cx*cx+cy*cy, 0f), 1f));
-        out.set(cx, cy, cz);
-        System.out.println(out);
-        return Color.rgba8888(Math.min(Math.max(out.x * 0.5f + 0.5f,0),1), Math.min(Math.max(out.y * 0.5f + 0.5f,0),1), out.z, 1f);
-//        out.set(cx, cy, cz).nor();
+//        out.set(cx, cy, cz);
 //        System.out.println(out);
-//        return Color.rgba8888(out.x * 0.5f + 0.5f, out.y * 0.5f + 0.5f, out.z, 1f);
+//        return Color.rgba8888(Math.min(Math.max(out.x * 0.5f + 0.5f,0),1), Math.min(Math.max(out.y * 0.5f + 0.5f,0),1), out.z * 0.5f + 0.5f, 1f);
+        out.set(cx, cy, cz).nor();
+//        System.out.println(out);
+        return Color.rgba8888(out.x * 0.5f + 0.5f, out.y * 0.5f + 0.5f, out.z * 0.5f + 0.5f, 1f);
     }
 
     public int depth(int x, int y) {
-        float maxDepth = 1.5f * (1f + (size + size) * distortHXY + size * distortVZ);
+        float maxDepth = 1.5f * (0.5f + (size + size) * distortHXY + size * distortVZ);
 //        float depth = (int)(0.5f + (xPos + yPos) * distortHXY + zPos * distortVZ);
         float gray = depths[x][y] / maxDepth;
 //        if(gray > 1f) System.out.println(x + ", " + y + ": depth " + depths[x][y] + ", maxDepth " + maxDepth);
@@ -508,7 +535,7 @@ public class Renderer {
         if(normals){
             for (int y = 0; y < ySize; y++) {
                 for (int x = 0; x < xSize; x++) {
-                    normalMap.drawPixel(x >>> shrink, y >>> shrink, depth(x, y));
+                    normalMap.drawPixel(x >>> shrink, y >>> shrink, sobel(x, y));
                 }
             }
         }

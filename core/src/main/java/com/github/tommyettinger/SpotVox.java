@@ -90,7 +90,7 @@ public class SpotVox extends ApplicationAdapter {
                 try {
                     png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                     if(normals){
-                        png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/height_" : "blocky/height_") + name + "_angle" + i + ".png"), renderer.normalMap);
+                        png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/normal_" : "blocky/normal_") + name + "_angle" + i + ".png"), renderer.normalMap);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
