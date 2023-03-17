@@ -155,16 +155,17 @@ public class Renderer {
         if(colorL[x][y] == -1) return 0;
         int[][] voxels = this.depths;
         float maxDepth = (0.5f + (size + size) * distortHXY + size * distortVZ);
-        float invMaxDepth = 8f / maxDepth;
-        inputMatrix.val[M00] = (x < 1 || y < 1) ? 0 : (voxels[x-1][y-1]>>>0) * invMaxDepth;
-        inputMatrix.val[M01] = (y < 1) ? 0 : (voxels[x][y-1]>>>0) * invMaxDepth;
-        inputMatrix.val[M02] = (x >= voxels.length - 1 || y < 1) ? 0 : (voxels[x+1][y-1]>>>0) * invMaxDepth;
-        inputMatrix.val[M10] = (x < 1) ? 0 : (voxels[x-1][y]>>>0) * invMaxDepth;
+        float invMaxDepth = 1f / maxDepth;
+        final int u = 1 << shrink;
+        inputMatrix.val[M00] = (x < u || y < u) ? 0 : (voxels[x-u][y-u]>>>0) * invMaxDepth;
+        inputMatrix.val[M01] = (y < u) ? 0 : (voxels[x][y-u]>>>0) * invMaxDepth;
+        inputMatrix.val[M02] = (x >= voxels.length - u || y < u) ? 0 : (voxels[x+u][y-u]>>>0) * invMaxDepth;
+        inputMatrix.val[M10] = (x < u) ? 0 : (voxels[x-u][y]>>>0) * invMaxDepth;
         inputMatrix.val[M11] = (voxels[x][y]>>>0) * invMaxDepth;
-        inputMatrix.val[M12] = (x >= voxels.length - 1) ? 0 : (voxels[x+1][y]>>>0) * invMaxDepth;
-        inputMatrix.val[M20] = (x < 1 || y >= voxels[0].length - 1) ? 0 : (voxels[x-1][y+1]>>>0) * invMaxDepth;
-        inputMatrix.val[M21] = (y >= voxels[0].length - 1) ? 0 : (voxels[x][y+1]>>>0) * invMaxDepth;
-        inputMatrix.val[M22] = (x >= voxels.length - 1 || y >= voxels[0].length - 1) ? 0 : (voxels[x+1][y+1]>>>0) * invMaxDepth;
+        inputMatrix.val[M12] = (x >= voxels.length - u) ? 0 : (voxels[x+u][y]>>>0) * invMaxDepth;
+        inputMatrix.val[M20] = (x < u || y >= voxels[0].length - u) ? 0 : (voxels[x-u][y+u]>>>0) * invMaxDepth;
+        inputMatrix.val[M21] = (y >= voxels[0].length - u) ? 0 : (voxels[x][y+u]>>>0) * invMaxDepth;
+        inputMatrix.val[M22] = (x >= voxels.length - u || y >= voxels[0].length - u) ? 0 : (voxels[x+u][y+u]>>>0) * invMaxDepth;
 
         sobelXMatrix.set(sobelXArray).mul(inputMatrix);
 
@@ -188,6 +189,7 @@ public class Renderer {
         float cz = (float) Math.sqrt(1f - Math.min(Math.max(cx*cx+cy*cy, 0f), 1f));
         out.set(cx, cy, cz).nor();
 //        System.out.println(out);
+//        return Color.rgba8888(Math.min(Math.max(out.x * 0.5f + 0.5f,0),1), Math.min(Math.max(out.y * 0.5f + 0.5f,0),1), out.z, 1f);
         return Color.rgba8888(out.x * 0.5f + 0.5f, out.y * 0.5f + 0.5f, out.z, 1f);
     }
     /**
