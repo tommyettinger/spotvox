@@ -40,13 +40,14 @@ public class Renderer {
 
     private Matrix3 inputMatrix = new Matrix3();
     private float[] sobelXArray = new float[]{
-            +1.0f, +2.0f, +1.0f,
-            +0.0f, +0.0f, +0.0f,
-            -1.0f, -2.0f, -1.0f};
-    private float[] sobelYArray = new float[]{
             +1.0f, +0.0f, -1.0f,
             +2.0f, +0.0f, -2.0f,
             +1.0f, +0.0f, -1.0f
+    };
+    private float[] sobelYArray = new float[]{
+            +1.0f, +2.0f, +1.0f,
+            +0.0f, +0.0f, +0.0f,
+            -1.0f, -2.0f, -1.0f
     };
     private Matrix3 sobelXMatrix = new Matrix3();
     private Matrix3 sobelYMatrix = new Matrix3();
@@ -152,17 +153,18 @@ public class Renderer {
      */
     public int sobel(int x, int y) {
         if(colorL[x][y] == -1) return 0;
-        int[][] voxels = this.voxels;
-        float invMaxDepth = 1f / size;//(0.5f + (size + size) * distortHXY + size * distortVZ);
-        inputMatrix.val[M00] = (x < 1 || y < 1) ? 0 : (voxels[x-1][y-1]>>>20) * invMaxDepth;
-        inputMatrix.val[M10] = (y < 1) ? 0 : (voxels[x][y-1]>>>20) * invMaxDepth;
-        inputMatrix.val[M20] = (x >= voxels.length - 1 || y < 1) ? 0 : (voxels[x+1][y-1]>>>20) * invMaxDepth;
-        inputMatrix.val[M01] = (x < 1) ? 0 : (voxels[x-1][y]>>>20) * invMaxDepth;
-        inputMatrix.val[M11] = (voxels[x][y]>>>20) * invMaxDepth;
-        inputMatrix.val[M21] = (x >= voxels.length - 1) ? 0 : (voxels[x+1][y]>>>20) * invMaxDepth;
-        inputMatrix.val[M02] = (x < 1 || y >= voxels[0].length - 1) ? 0 : (voxels[x-1][y+1]>>>20) * invMaxDepth;
-        inputMatrix.val[M12] = (y >= voxels[0].length - 1) ? 0 : (voxels[x][y+1]>>>20) * invMaxDepth;
-        inputMatrix.val[M22] = (x >= voxels.length - 1 || y >= voxels[0].length - 1) ? 0 : (voxels[x+1][y+1]>>>20) * invMaxDepth;
+        int[][] voxels = this.depths;
+        float maxDepth = (0.5f + (size + size) * distortHXY + size * distortVZ);
+        float invMaxDepth = 1f / maxDepth;
+        inputMatrix.val[M00] = (x < 1 || y < 1) ? 0 : (voxels[x-1][y-1]>>>0) * invMaxDepth;
+        inputMatrix.val[M01] = (y < 1) ? 0 : (voxels[x][y-1]>>>0) * invMaxDepth;
+        inputMatrix.val[M02] = (x >= voxels.length - 1 || y < 1) ? 0 : (voxels[x+1][y-1]>>>0) * invMaxDepth;
+        inputMatrix.val[M10] = (x < 1) ? 0 : (voxels[x-1][y]>>>0) * invMaxDepth;
+        inputMatrix.val[M11] = (voxels[x][y]>>>0) * invMaxDepth;
+        inputMatrix.val[M12] = (x >= voxels.length - 1) ? 0 : (voxels[x+1][y]>>>0) * invMaxDepth;
+        inputMatrix.val[M20] = (x < 1 || y >= voxels[0].length - 1) ? 0 : (voxels[x-1][y+1]>>>0) * invMaxDepth;
+        inputMatrix.val[M21] = (y >= voxels[0].length - 1) ? 0 : (voxels[x][y+1]>>>0) * invMaxDepth;
+        inputMatrix.val[M22] = (x >= voxels.length - 1 || y >= voxels[0].length - 1) ? 0 : (voxels[x+1][y+1]>>>0) * invMaxDepth;
 
         sobelXMatrix.set(sobelXArray).mul(inputMatrix);
         sobelYMatrix.set(sobelYArray).mul(inputMatrix);
