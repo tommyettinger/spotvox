@@ -81,7 +81,7 @@ public class SpotVox extends ApplicationAdapter {
         gif.palette = new PaletteReducer();
         gif.setDitherAlgorithm(Dithered.DitherAlgorithm.ROBERTS);
         gif.setDitherStrength(0.25f);
-        Pixmap pixmap, normalMap;
+        Pixmap pixmap;
         boolean smoothing = multiple > 0;
         multiple = Math.abs(multiple);
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
@@ -90,6 +90,7 @@ public class SpotVox extends ApplicationAdapter {
                 try {
                     png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                     if(normals){
+                        renderer.normalMap = BlurUtils.blur(renderer.normalMap, 1, 1, true);
                         png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/normal_" : "blocky/normal_") + name + "_angle" + i + ".png"), renderer.normalMap);
                     }
                 } catch (IOException e) {
