@@ -72,7 +72,7 @@ public class SpotVox extends ApplicationAdapter {
         renderer.distortHXY = distortHXY;
         renderer.distoryVXY = distortVXY;
         renderer.distortVZ = distortVZ;
-        renderer.normals = normals;
+        renderer.computeNormals = normals;
         renderer.init();
         renderer.outline = outline;
         renderer.saturation(saturation);
@@ -90,7 +90,7 @@ public class SpotVox extends ApplicationAdapter {
                 try {
                     png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                     if(normals){
-                        renderer.normalMap = BlurUtils.blur(renderer.normalMap, 1, 1, true);
+//                        renderer.normalMap = BlurUtils.blur(renderer.normalMap, 1, 1, true);
                         png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/normal_" : "blocky/normal_") + name + "_angle" + i + ".png"), renderer.normalMap);
                     }
                 } catch (IOException e) {
@@ -130,7 +130,7 @@ public class SpotVox extends ApplicationAdapter {
                 renderer.distortHXY = distortHXY;
                 renderer.distoryVXY = distortVXY;
                 renderer.distortVZ = distortVZ;
-                renderer.normals = normals;
+                renderer.computeNormals = normals;
                 renderer.init();
                 renderer.outline = outline;
                 renderer.saturation(saturation);
