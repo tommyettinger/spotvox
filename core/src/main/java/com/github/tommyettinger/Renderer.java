@@ -232,10 +232,14 @@ public class Renderer {
         float br = (x >= data.length - u) ? 0 : (data[x+u][y]>>>0) * invMaxDepth;                // bottom right
 
 
-        // sobel filter
-        float cx = (tl + l + l + bl) - (tr + r + r + br);
-        float cy = (tl + t + t + tr) - (bl + b + b + br);
-        float cz = 0.125f; // float strength = 8f;
+        //// Sobel operator
+        //float cx = (tl + l + l + bl) - (tr + r + r + br);
+        //float cy = (tl + t + t + tr) - (bl + b + b + br);
+        //float cz = 0.125f; // float strength = 8f;
+        // Scharr operator
+        float cx = ((tl + bl - tr - br) * 47 + (l - r) * 162);
+        float cy = ((tl + tr - bl - br) * 47 + (t - b) * 162);
+        float cz = 12f; // float strength = 256f/16f;
 
 //        out.set(cx, cy, cz);
 //        System.out.println(out);
