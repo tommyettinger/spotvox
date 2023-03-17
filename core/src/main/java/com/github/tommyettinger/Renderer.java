@@ -155,7 +155,7 @@ public class Renderer {
         if(colorL[x][y] == -1) return 0;
         int[][] voxels = this.depths;
         float maxDepth = (0.5f + (size + size) * distortHXY + size * distortVZ);
-        float invMaxDepth = 1f / maxDepth;
+        float invMaxDepth = 8f / maxDepth;
         inputMatrix.val[M00] = (x < 1 || y < 1) ? 0 : (voxels[x-1][y-1]>>>0) * invMaxDepth;
         inputMatrix.val[M01] = (y < 1) ? 0 : (voxels[x][y-1]>>>0) * invMaxDepth;
         inputMatrix.val[M02] = (x >= voxels.length - 1 || y < 1) ? 0 : (voxels[x+1][y-1]>>>0) * invMaxDepth;
@@ -167,24 +167,26 @@ public class Renderer {
         inputMatrix.val[M22] = (x >= voxels.length - 1 || y >= voxels[0].length - 1) ? 0 : (voxels[x+1][y+1]>>>0) * invMaxDepth;
 
         sobelXMatrix.set(sobelXArray).mul(inputMatrix);
-        sobelYMatrix.set(sobelYArray).mul(inputMatrix);
 
         float cx = (
                 sobelXMatrix.val[M00] +
-                sobelXMatrix.val[M01] +
-                sobelXMatrix.val[M02] +
+                sobelXMatrix.val[M10] +
                 sobelXMatrix.val[M20] +
-                sobelXMatrix.val[M21] +
+                sobelXMatrix.val[M02] +
+                sobelXMatrix.val[M12] +
                 sobelXMatrix.val[M22]);
+
+        sobelYMatrix.set(sobelYArray).mul(inputMatrix);
+
         float cy = (
                 sobelYMatrix.val[M00] +
-                sobelYMatrix.val[M10] +
-                sobelYMatrix.val[M20] +
+                sobelYMatrix.val[M01] +
                 sobelYMatrix.val[M02] +
-                sobelYMatrix.val[M12] +
+                sobelYMatrix.val[M20] +
+                sobelYMatrix.val[M21] +
                 sobelYMatrix.val[M22]);
         float cz = (float) Math.sqrt(1f - Math.min(Math.max(cx*cx+cy*cy, 0f), 1f));
-        out.set(cx, cy, cz);
+        out.set(cx, cy, cz).nor();
 //        System.out.println(out);
         return Color.rgba8888(out.x * 0.5f + 0.5f, out.y * 0.5f + 0.5f, out.z, 1f);
     }
