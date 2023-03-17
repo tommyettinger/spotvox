@@ -301,6 +301,10 @@ public class Renderer {
         final int threshold = 13;
         pixmap.setColor(0);
         pixmap.fill();
+        if(normals) {
+            normalMap.setColor(0);
+            normalMap.fill();
+        }
         int xSize = depths.length - 1, ySize = depths[0].length - 1, depth;
         int v, vx, vy, vz, fx, fy, fz;
         float hs = (size) * 0.5f, ox, oy, oz, tx, ty, tz;
@@ -444,6 +448,14 @@ public class Renderer {
                             }
                         }
                     }
+                }
+            }
+        }
+
+        if(normals){
+            for (int y = 0; y < ySize; y++) {
+                for (int x = 0; x < xSize; x++) {
+                    normalMap.drawPixel(x >>> shrink, y >>> shrink, sobel(x, y));
                 }
             }
         }
