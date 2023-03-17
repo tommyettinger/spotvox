@@ -140,6 +140,7 @@ public class Renderer {
 //        return turns * (-0.775f - 0.225f * turns) * ((floor & 2L) - 1L);
 //    }
 
+    private Vector3 out = new Vector3();
     /**
      * Applies a Sobel filter to a given x,y point in the already-computed depths 2D array, returning an RGBA8888 color
      * representing a normal. The blue channel of the color represents the axis of the normal vector that points toward
@@ -151,27 +152,39 @@ public class Renderer {
      */
     public int sobel(int x, int y) {
         if(colorL[x][y] == -1) return 0;
-
-        float invMaxDepth = 1f / (0.5f + (size + size) * distortHXY + size * distortVZ);
-        inputMatrix.val[M00] = (x < 1 || y < 1) ? 0 : depths[x-1][y-1] * invMaxDepth;
-        inputMatrix.val[M01] = (y < 1) ? 0 : depths[x][y-1] * invMaxDepth;
-        inputMatrix.val[M02] = (x >= depths.length - 1 || y < 1) ? 0 : depths[x+1][y-1] * invMaxDepth;
-        inputMatrix.val[M10] = (x < 1) ? 0 : depths[x-1][y] * invMaxDepth;
-        inputMatrix.val[M11] = depths[x][y] * invMaxDepth;
-        inputMatrix.val[M12] = (x >= depths.length - 1) ? 0 : depths[x+1][y] * invMaxDepth;
-        inputMatrix.val[M20] = (x < 1 || y >= depths[0].length - 1) ? 0 : depths[x-1][y+1] * invMaxDepth;
-        inputMatrix.val[M21] = (y >= depths[0].length - 1) ? 0 : depths[x][y+1] * invMaxDepth;
-        inputMatrix.val[M22] = (x >= depths.length - 1 || y >= depths[0].length - 1) ? 0 : depths[x+1][y+1] * invMaxDepth;
+        int[][] voxels = this.voxels;
+        float invMaxDepth = 1f / size;//(0.5f + (size + size) * distortHXY + size * distortVZ);
+        inputMatrix.val[M00] = (x < 1 || y < 1) ? 0 : (voxels[x-1][y-1]>>>20) * invMaxDepth;
+        inputMatrix.val[M10] = (y < 1) ? 0 : (voxels[x][y-1]>>>20) * invMaxDepth;
+        inputMatrix.val[M20] = (x >= voxels.length - 1 || y < 1) ? 0 : (voxels[x+1][y-1]>>>20) * invMaxDepth;
+        inputMatrix.val[M01] = (x < 1) ? 0 : (voxels[x-1][y]>>>20) * invMaxDepth;
+        inputMatrix.val[M11] = (voxels[x][y]>>>20) * invMaxDepth;
+        inputMatrix.val[M21] = (x >= voxels.length - 1) ? 0 : (voxels[x+1][y]>>>20) * invMaxDepth;
+        inputMatrix.val[M02] = (x < 1 || y >= voxels[0].length - 1) ? 0 : (voxels[x-1][y+1]>>>20) * invMaxDepth;
+        inputMatrix.val[M12] = (y >= voxels[0].length - 1) ? 0 : (voxels[x][y+1]>>>20) * invMaxDepth;
+        inputMatrix.val[M22] = (x >= voxels.length - 1 || y >= voxels[0].length - 1) ? 0 : (voxels[x+1][y+1]>>>20) * invMaxDepth;
 
         sobelXMatrix.set(sobelXArray).mul(inputMatrix);
         sobelYMatrix.set(sobelYArray).mul(inputMatrix);
 
-        float cx = sobelXMatrix.val[M00] + sobelXMatrix.val[M10] + sobelXMatrix.val[M20] +
-                sobelXMatrix.val[M02] + sobelXMatrix.val[M12] + sobelXMatrix.val[M22];
-        float cy = sobelYMatrix.val[M00] + sobelYMatrix.val[M01] + sobelYMatrix.val[M02] +
-                sobelYMatrix.val[M20] + sobelYMatrix.val[M21] + sobelYMatrix.val[M22];
-        float cz = (float) Math.sqrt(1f - (cx*cx+cy*cy));
-        return Color.rgba8888(cx, cy, cz, 1f);
+        float cx = (
+                sobelXMatrix.val[M00] +
+                sobelXMatrix.val[M01] +
+                sobelXMatrix.val[M02] +
+                sobelXMatrix.val[M20] +
+                sobelXMatrix.val[M21] +
+                sobelXMatrix.val[M22]);
+        float cy = (
+                sobelYMatrix.val[M00] +
+                sobelYMatrix.val[M10] +
+                sobelYMatrix.val[M20] +
+                sobelYMatrix.val[M02] +
+                sobelYMatrix.val[M12] +
+                sobelYMatrix.val[M22]);
+        float cz = (float) Math.sqrt(1f - Math.min(Math.max(cx*cx+cy*cy, 0f), 1f));
+        out.set(cx, cy, cz);
+//        System.out.println(out);
+        return Color.rgba8888(out.x * 0.5f + 0.5f, out.y * 0.5f + 0.5f, out.z, 1f);
     }
     /**
      * Takes a modifier between -1f and 0.5f, and adjusts how this changes saturation accordingly.
