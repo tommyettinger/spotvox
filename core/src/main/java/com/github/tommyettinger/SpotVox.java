@@ -6,9 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.github.tommyettinger.anim8.AnimatedGif;
-import com.github.tommyettinger.anim8.Dithered;
-import com.github.tommyettinger.anim8.PaletteReducer;
+import com.github.tommyettinger.anim8.*;
 import com.github.tommyettinger.io.VoxIOExtended;
 
 import java.io.IOException;
@@ -18,8 +16,8 @@ public class SpotVox extends ApplicationAdapter {
     public Renderer renderer;
     public String name;
     public byte[][][] voxels;
-    private PixmapIO.PNG png;
-    private AnimatedGif gif;
+    private FastPNG png;
+    private FastGif gif;
     public int multiple;
     public int outline;
     public int size;
@@ -90,9 +88,9 @@ public class SpotVox extends ApplicationAdapter {
         renderer.init();
         renderer.outline = outline;
         renderer.saturation(saturation);
-        png = new PixmapIO.PNG();
-        gif = new AnimatedGif();
-        gif.palette = new PaletteReducer();
+        png = new FastPNG();
+        gif = new FastGif();
+        gif.palette = new FastPalette();
         gif.setDitherAlgorithm(Dithered.DitherAlgorithm.ROBERTS);
         gif.setDitherStrength(0.25f);
         Pixmap pixmap;
@@ -101,13 +99,9 @@ public class SpotVox extends ApplicationAdapter {
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
             for (int i = 0; i < rotations; i++) {
                 pixmap = renderer.drawSplats(voxels, i * iRotations + yaw, pitch, roll, 0, 0, 0, VoxIOExtended.lastMaterials);
-                try {
-                    png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
-                    if(normals){
-                        png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/normal_" : "blocky/normal_") + name + "_angle" + i + ".png"), renderer.normalMap);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
+                if(normals){
+                    png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/normal_" : "blocky/normal_") + name + "_angle" + i + ".png"), renderer.normalMap);
                 }
             }
             if(fps != 0){

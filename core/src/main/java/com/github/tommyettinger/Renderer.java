@@ -153,6 +153,12 @@ public class Renderer {
 //        return turns * (-0.775f - 0.225f * turns) * ((floor & 2L) - 1L);
 //    }
 
+    public static void pixelDraw(Pixmap pm, int x, int y) {
+        pm.drawPixel(x, pm.getHeight() - 1 - y);
+    }
+    public static void pixelDraw(Pixmap pm, int x, int y, int color) {
+        pm.drawPixel(x, pm.getHeight() - 1 - y, color);
+    }
     private final Vector3 out = new Vector3();
     /**
      * Applies a Sobel filter to a given x,y point in the already-computed depths 2D array, returning an RGBA8888 color
@@ -261,12 +267,12 @@ public class Renderer {
         int color = Color.rgba8888(out.x * 0.5f + 0.5f, out.y * 0.5f + 0.5f, out.z * 0.5f + 0.5f, 1f);
         normalMap.setColor(color);
         int xx = x >>> shrink, yy = y >>> shrink;
-        normalMap.drawPixel(xx, yy);
+        pixelDraw(normalMap, xx, yy);
         normalMap.setColor(color & 0xFFFFFF00);
-        if(xx >= 1 && normalMap.getPixel(xx-1, yy) == 0) normalMap.drawPixel(xx-1,yy);
-        if(yy >= 1 && normalMap.getPixel(xx, yy-1) == 0) normalMap.drawPixel(xx,yy-1);
-        if(xx < normalMap.getWidth() - 1 && normalMap.getPixel(xx+1, yy) == 0) normalMap.drawPixel(xx+1,yy);
-        if(yy < normalMap.getHeight() - 1 && normalMap.getPixel(xx, yy+1) == 0) normalMap.drawPixel(xx,yy+1);
+        if(xx >= 1 && normalMap.getPixel(xx-1, yy) == 0) pixelDraw(normalMap, xx-1,yy);
+        if(yy >= 1 && normalMap.getPixel(xx, yy-1) == 0) pixelDraw(normalMap, xx,yy-1);
+        if(xx < normalMap.getWidth() - 1 && normalMap.getPixel(xx+1, yy) == 0) pixelDraw(normalMap, xx+1,yy);
+        if(yy < normalMap.getHeight() - 1 && normalMap.getPixel(xx, yy+1) == 0) pixelDraw(normalMap, xx,yy+1);
 
     }
 
@@ -557,7 +563,7 @@ public class Renderer {
         for (int x = xSize; x >= 0; x--) {
             for (int y = ySize; y >= 0; y--) {
                 if (colorA[x][y] >= 0f) {
-                    pixmap.drawPixel(x >>> shrink, y >>> shrink, ColorTools.toRGBA8888(ColorTools.oklab(
+                    pixelDraw(pixmap, x >>> shrink, y >>> shrink, ColorTools.toRGBA8888(ColorTools.oklab(
                             Math.min(Math.max(colorL[x][y] - 0.1f * lightPower + midShading[x][y] + baseLight, 0f), 1f),
                                                         (colorA[x][y] - 0.5f) * neutral + 0.5f,
                             (colorB[x][y] - 0.5f) * neutral + 0.5f, 1f)));
@@ -578,43 +584,43 @@ public class Renderer {
                         if(outline == 2) outer = inner;
                         depth = depths[x][y];
                         if (outlines[x - step][y] == 0) {
-                            pixmap.drawPixel(hx - 1, hy    , outer);
+                            pixelDraw(pixmap, hx - 1, hy    , outer);
                         }
                         else if (depths[x - step][y] < depth - threshold) {
-                            pixmap.drawPixel(hx - 1, hy    , inner);
+                            pixelDraw(pixmap, hx - 1, hy    , inner);
                         }
                         if (outlines[x + step][y] == 0) {
-                            pixmap.drawPixel(hx + 1, hy    , outer);
+                            pixelDraw(pixmap, hx + 1, hy    , outer);
                         }
                         else if (depths[x + step][y] < depth - threshold) {
-                            pixmap.drawPixel(hx + 1, hy    , inner);
+                            pixelDraw(pixmap, hx + 1, hy    , inner);
                         }
                         if (outlines[x][y - step] == 0) {
-                            pixmap.drawPixel(hx    , hy - 1, outer);
+                            pixelDraw(pixmap, hx    , hy - 1, outer);
                         }
                         else if (depths[x][y - step] < depth - threshold) {
-                            pixmap.drawPixel(hx    , hy - 1, inner);
+                            pixelDraw(pixmap, hx    , hy - 1, inner);
                         }
                         if (outlines[x][y + step] == 0) {
-                            pixmap.drawPixel(hx    , hy + 1, outer);
+                            pixelDraw(pixmap, hx    , hy + 1, outer);
                         }
                         else if (depths[x][y + step] < depth - threshold) {
-                            pixmap.drawPixel(hx    , hy + 1, inner);
+                            pixelDraw(pixmap, hx    , hy + 1, inner);
                         }
 
                         // block outline, applies to outer only
                         if(outline >= 4) {
                             if (outlines[x - step][y - step] == 0) {
-                                pixmap.drawPixel(hx - 1, hy - 1, outer);
+                                pixelDraw(pixmap, hx - 1, hy - 1, outer);
                             }
                             if (outlines[x + step][y - step] == 0) {
-                                pixmap.drawPixel(hx + 1, hy - 1, outer);
+                                pixelDraw(pixmap, hx + 1, hy - 1, outer);
                             }
                             if (outlines[x - step][y + step] == 0) {
-                                pixmap.drawPixel(hx - 1, hy + 1, outer);
+                                pixelDraw(pixmap, hx - 1, hy + 1, outer);
                             }
                             if (outlines[x + step][y + step] == 0) {
-                                pixmap.drawPixel(hx + 1, hy + 1, outer);
+                                pixelDraw(pixmap, hx + 1, hy + 1, outer);
                             }
                         }
                     }
@@ -644,7 +650,7 @@ public class Renderer {
                     for (int x = 0, w = normalMap.getWidth(); x < w; x++) {
                         int idx = x + y * w;
                         color = Color.rgba8888(normals[0][idx], normals[1][idx], normals[2][idx], normals[3][idx]);
-                        normalMap.drawPixel(x, y, color);
+                        pixelDraw(normalMap, x, y, color);
                     }
                 }
             }
