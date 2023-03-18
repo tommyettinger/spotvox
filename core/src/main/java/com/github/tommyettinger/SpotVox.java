@@ -29,11 +29,12 @@ public class SpotVox extends ApplicationAdapter {
     public float saturation;
     public float distortHXY, distortVXY, distortVZ;
     public boolean normals;
+    public double normalSigma;
 
     public SpotVox() {
     }
     public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps,
-                   int rotations, float distortHXY, float distortVXY, float distortVZ, boolean normals) {
+                   int rotations, float distortHXY, float distortVXY, float distortVZ, double normals) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
@@ -44,7 +45,8 @@ public class SpotVox extends ApplicationAdapter {
         this.distortHXY = distortHXY;
         this.distortVXY = distortVXY;
         this.distortVZ = distortVZ;
-        this.normals = normals;
+        this.normals = normals >= 0.0;
+        this.normalSigma = normals;
         iRotations = 1f / this.rotations;
         switch (edge) {
             case "none":
@@ -73,6 +75,7 @@ public class SpotVox extends ApplicationAdapter {
         renderer.distoryVXY = distortVXY;
         renderer.distortVZ = distortVZ;
         renderer.computeNormals = normals;
+        renderer.blurSigma = normalSigma;
         renderer.init();
         renderer.outline = outline;
         renderer.saturation(saturation);
@@ -90,7 +93,6 @@ public class SpotVox extends ApplicationAdapter {
                 try {
                     png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                     if(normals){
-//                        renderer.normalMap = BlurUtils.blur(renderer.normalMap, 1, 1, true);
                         png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/normal_" : "blocky/normal_") + name + "_angle" + i + ".png"), renderer.normalMap);
                     }
                 } catch (IOException e) {
@@ -131,6 +133,7 @@ public class SpotVox extends ApplicationAdapter {
                 renderer.distoryVXY = distortVXY;
                 renderer.distortVZ = distortVZ;
                 renderer.computeNormals = normals;
+                renderer.blurSigma = normalSigma;
                 renderer.init();
                 renderer.outline = outline;
                 renderer.saturation(saturation);

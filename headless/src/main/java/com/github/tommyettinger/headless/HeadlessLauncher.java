@@ -32,8 +32,8 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "16")
 	public int turn = 0;
 
-	@CommandLine.Option(names = {"-n", "--normals"}, description = "If true, this will output a normal-map image for each non-animated output image.", defaultValue = "true")
-	public boolean normals = false;
+	@CommandLine.Option(names = {"-n", "--normals"}, description = "If 0.0 or greater, this will output a normal-map image for each non-animated output image; the number is how much the normal-map should be blurred.", defaultValue = "0.8")
+	public double normals = -1.0;
 
 	@CommandLine.Option(names = {"-r", "--rotations"}, description = "How many different rotations to render at each size; can be 1 or higher.", defaultValue = "8")
 	public int rotations = 8;
