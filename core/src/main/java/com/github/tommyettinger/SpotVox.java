@@ -32,12 +32,13 @@ public class SpotVox extends ApplicationAdapter {
     public double normalSigma;
     public float lightPower;
     public float baseLight;
+    public float yaw, pitch, roll;
 
     public SpotVox() {
     }
     public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps,
-                   int rotations, float distortHXY, float distortVXY, float distortVZ, double normals,
-                   float lightPower, float baseLight) {
+                   int rotations, float yaw, float pitch, float roll, float distortHXY, float distortVXY,
+                   float distortVZ, double normals, float lightPower, float baseLight) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
@@ -45,6 +46,9 @@ public class SpotVox extends ApplicationAdapter {
         this.multiple = multiple == 0 ? 1 : multiple;
         this.fps = fps;
         this.rotations = Math.max(1, rotations);
+        this.yaw = yaw / 360f;
+        this.pitch = pitch / 360f;
+        this.roll = roll / 360f;
         this.distortHXY = distortHXY;
         this.distortVXY = distortVXY;
         this.distortVZ = distortVZ;
@@ -96,7 +100,7 @@ public class SpotVox extends ApplicationAdapter {
         multiple = Math.abs(multiple);
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
             for (int i = 0; i < rotations; i++) {
-                pixmap = renderer.drawSplats(voxels, i * iRotations, 0, 0, 0, 0, 0, VoxIOExtended.lastMaterials);
+                pixmap = renderer.drawSplats(voxels, i * iRotations + yaw, pitch, roll, 0, 0, 0, VoxIOExtended.lastMaterials);
                 try {
                     png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
                     if(normals){
@@ -109,7 +113,7 @@ public class SpotVox extends ApplicationAdapter {
             if(fps != 0){
                 Array<Pixmap> pm = new Array<>(128);
                 for (int i = 0; i < 128; i++) {
-                    pixmap = renderer.drawSplats(voxels, i * 0x1p-7f + 0.125f, 0, 0, 0, 0, 0, VoxIOExtended.lastMaterials);
+                    pixmap = renderer.drawSplats(voxels, i * 0x1p-7f + 0.125f + yaw, pitch, roll, 0, 0, 0, VoxIOExtended.lastMaterials);
                     Pixmap p = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), pixmap.getFormat());
                     p.drawPixmap(pixmap, 0, 0);
                     pm.add(p);

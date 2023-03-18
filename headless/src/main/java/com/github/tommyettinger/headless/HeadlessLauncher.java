@@ -23,10 +23,10 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-S", "--saturation"}, description = "A modifier that affects how saturated colors will be; 0 is unchanged, 0.5 is super-bold, and -1 is grayscale.", defaultValue = "0")
 	public float saturation = 0;
 
-	@CommandLine.Option(names = {"-L", "--lightness"}, description = "A multiplier that affects how much shading changes pixel colors; 0 is unchanged, 2.0 is high-contrast, and -1 is no-shading.", defaultValue = "-1.0")
+	@CommandLine.Option(names = {"-L", "--lightness"}, description = "A multiplier that affects how much shading changes pixel colors; 0 is unchanged, 2.0 is high-contrast, and -1 is no-shading.", defaultValue = "0.0")
 	public float lightPower = 0;
 
-	@CommandLine.Option(names = {"-b", "--base-light"}, description = "Will be added to the lightness for all voxels; can be negative or positive, and is typically between -0.5 and 0.5.", defaultValue = "0.125")
+	@CommandLine.Option(names = {"-b", "--base-light"}, description = "Will be added to the lightness for all voxels; can be negative or positive, and is typically between -0.5 and 0.5.", defaultValue = "0.0")
 	public float baseLight = 0;
 
 	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: none, partial, light, heavy, block.", defaultValue = "none")
@@ -38,7 +38,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "16")
 	public int turn = 0;
 
-	@CommandLine.Option(names = {"-n", "--normals"}, description = "If 0.0 or greater, this will output a normal-map image for each non-animated output image; the number is how much the normal-map should be blurred.", defaultValue = "1.0")
+	@CommandLine.Option(names = {"-n", "--normals"}, description = "If 0.0 or greater, this will output a normal-map image for each non-animated output image; the number is how much the normal-map should be blurred.", defaultValue = "0.8")
 	public double normals = -1.0;
 
 	@CommandLine.Option(names = {"-r", "--rotations"}, description = "How many different rotations to render at each size; can be 1 or higher.", defaultValue = "128")
@@ -53,6 +53,14 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"--vertical-z"}, description = "Modifies the projection; isometric uses 3.", defaultValue = "3")
 	public float distortVZ = 3;
 
+	@CommandLine.Option(names = {"-Y", "--yaw"}, description = "Added to the yaw rotation, in degrees. May be a decimal.", defaultValue = "0")
+	public float yaw = 0;
+
+	@CommandLine.Option(names = {"-P", "--pitch"}, description = "Added to the pitch rotation, in degrees. May be a decimal.", defaultValue = "0")
+	public float pitch = 0;
+
+	@CommandLine.Option(names = {"-R", "--roll"}, description = "Added to the roll rotation, in degrees. May be a decimal.", defaultValue = "-90")
+	public float roll = 0;
 	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Eye-Tyrant.vox")
 	public String input = "Eye-Tyrant.vox";
 
@@ -123,7 +131,8 @@ public class HeadlessLauncher implements Callable<Integer> {
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
-			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations, distortHXY, distortVXY, distortVZ, normals, lightPower, baseLight), configuration){
+			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations,
+					yaw, pitch, roll, distortHXY, distortVXY, distortVZ, normals, lightPower, baseLight), configuration){
 				{
 					try {
 						mainLoopThread.join();
