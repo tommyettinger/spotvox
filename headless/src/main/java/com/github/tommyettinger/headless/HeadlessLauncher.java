@@ -35,7 +35,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "2")
 	public int multiple = 2;
 
-	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "16")
+	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "0")
 	public int turn = 0;
 
 	@CommandLine.Option(names = {"-n", "--normals"}, description = "If 0.0 or greater, this will output a normal-map image for each non-animated output image; the number is how much the normal-map should be blurred.", defaultValue = "-1.0")

@@ -3,16 +3,16 @@ package com.github.tommyettinger;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.github.tommyettinger.anim8.*;
+import com.github.tommyettinger.anim8.Dithered;
+import com.github.tommyettinger.anim8.FastGif;
+import com.github.tommyettinger.anim8.FastPNG;
+import com.github.tommyettinger.anim8.FastPalette;
 import com.github.tommyettinger.io.VoxIOExtended;
 
-import java.io.IOException;
-
 public class SpotVox extends ApplicationAdapter {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public Renderer renderer;
     public String name;
     public byte[][][] voxels;
