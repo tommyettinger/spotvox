@@ -31,12 +31,13 @@ public class SpotVox extends ApplicationAdapter {
     public boolean normals;
     public double normalSigma;
     public float lightPower;
+    public float baseLight;
 
     public SpotVox() {
     }
     public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps,
                    int rotations, float distortHXY, float distortVXY, float distortVZ, double normals,
-                   float lightPower) {
+                   float lightPower, float baseLight) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
@@ -50,6 +51,7 @@ public class SpotVox extends ApplicationAdapter {
         this.normals = normals >= 0.0;
         this.normalSigma = normals;
         this.lightPower = lightPower + 1f;
+        this.baseLight = baseLight;
         iRotations = 1f / this.rotations;
         switch (edge) {
             case "none":
@@ -80,6 +82,7 @@ public class SpotVox extends ApplicationAdapter {
         renderer.computeNormals = normals;
         renderer.blurSigma = normalSigma;
         renderer.lightPower = lightPower;
+        renderer.baseLight = baseLight;
         renderer.init();
         renderer.outline = outline;
         renderer.saturation(saturation);
@@ -139,6 +142,7 @@ public class SpotVox extends ApplicationAdapter {
                 renderer.computeNormals = normals;
                 renderer.blurSigma = normalSigma;
                 renderer.lightPower = lightPower;
+                renderer.baseLight = baseLight;
                 renderer.init();
                 renderer.outline = outline;
                 renderer.saturation(saturation);

@@ -38,6 +38,7 @@ public class Renderer {
     public int shrink = 2;
     public float neutral = 1f;
     public float lightPower = 1f;
+    public float baseLight = 0f;
     public IntObjectMap<VoxMaterial> materialMap;
 
     public float distortHXY = 2, distoryVXY = 1, distortVZ = 3;
@@ -405,7 +406,7 @@ public class Renderer {
                     colorB[ax][ay] = paletteB[voxel & 255];
                     depths[ax][ay] = depth;
                     materials[ax][ay] = m;
-                    outlines[ax][ay] = ColorTools.toRGBA8888(limitToGamut(paletteL[voxel & 255] * (0.8f + emit), (paletteA[voxel & 255] - 0.5f) * neutral + 0.5f, (paletteB[voxel & 255] - 0.5f) * neutral + 0.5f, 1f));
+                    outlines[ax][ay] = ColorTools.toRGBA8888(limitToGamut(paletteL[voxel & 255] * (0.8f + emit) + baseLight, (paletteA[voxel & 255] - 0.5f) * neutral + 0.5f, (paletteB[voxel & 255] - 0.5f) * neutral + 0.5f, 1f));
 //                                Coloring.darken(palette[voxel & 255], 0.375f - emit);
 //                                Coloring.adjust(palette[voxel & 255], 0.625f + emit, neutral);
 //                    else
@@ -557,7 +558,7 @@ public class Renderer {
             for (int y = ySize; y >= 0; y--) {
                 if (colorA[x][y] >= 0f) {
                     pixmap.drawPixel(x >>> shrink, y >>> shrink, ColorTools.toRGBA8888(ColorTools.oklab(
-                            Math.min(Math.max(colorL[x][y] - 0.1f * lightPower + midShading[x][y], 0f), 1f),
+                            Math.min(Math.max(colorL[x][y] - 0.1f * lightPower + midShading[x][y] + baseLight, 0f), 1f),
                                                         (colorA[x][y] - 0.5f) * neutral + 0.5f,
                             (colorB[x][y] - 0.5f) * neutral + 0.5f, 1f)));
                 }

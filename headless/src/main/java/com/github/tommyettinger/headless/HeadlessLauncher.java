@@ -26,7 +26,10 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-L", "--lightness"}, description = "A multiplier that affects how much shading changes pixel colors; 0 is unchanged, 2.0 is high-contrast, and -1 is no-shading.", defaultValue = "-1.0")
 	public float lightPower = 0;
 
-	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: none, partial, light, heavy, block.", defaultValue = "light")
+	@CommandLine.Option(names = {"-b", "--base-light"}, description = "Will be added to the lightness for all voxels; can be negative or positive, and is typically between -0.5 and 0.5.", defaultValue = "0.125")
+	public float baseLight = 0;
+
+	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: none, partial, light, heavy, block.", defaultValue = "none")
 	public String edge = "light";
 
 	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "2")
@@ -35,10 +38,10 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "16")
 	public int turn = 0;
 
-	@CommandLine.Option(names = {"-n", "--normals"}, description = "If 0.0 or greater, this will output a normal-map image for each non-animated output image; the number is how much the normal-map should be blurred.", defaultValue = "0.8")
+	@CommandLine.Option(names = {"-n", "--normals"}, description = "If 0.0 or greater, this will output a normal-map image for each non-animated output image; the number is how much the normal-map should be blurred.", defaultValue = "1.0")
 	public double normals = -1.0;
 
-	@CommandLine.Option(names = {"-r", "--rotations"}, description = "How many different rotations to render at each size; can be 1 or higher.", defaultValue = "8")
+	@CommandLine.Option(names = {"-r", "--rotations"}, description = "How many different rotations to render at each size; can be 1 or higher.", defaultValue = "128")
 	public int rotations = 8;
 
 	@CommandLine.Option(names = {"--horizontal-xy"}, description = "Modifies the projection; isometric uses 2.", defaultValue = "2")
@@ -120,7 +123,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
-			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations, distortHXY, distortVXY, distortVZ, normals, lightPower), configuration){
+			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations, distortHXY, distortVXY, distortVZ, normals, lightPower, baseLight), configuration){
 				{
 					try {
 						mainLoopThread.join();
