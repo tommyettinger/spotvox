@@ -37,6 +37,7 @@ public class Renderer {
     public int size;
     public int shrink = 2;
     public float neutral = 1f;
+    public float lightPower = 1f;
     public IntObjectMap<VoxMaterial> materialMap;
 
     public float distortHXY = 2, distoryVXY = 1, distortVZ = 3;
@@ -515,9 +516,10 @@ public class Renderer {
                         float spread = MathUtils.lerp(0.0025f, 0.001f, rough);
                         if (Math.abs(shadeZ[fx][fy] - tz) <= limit) {
                             spread *= 2f;
-                            colorL[sx][sy] += m.getTrait(VoxMaterial.MaterialTrait._ior) * 0.2f;
+                            colorL[sx][sy] += m.getTrait(VoxMaterial.MaterialTrait._ior) * 0.2f * lightPower;
                         }
                         int dist;
+                        spread *= lightPower;
                         for (int i = -3, si = sx + i; i <= 3; i++, si++) {
                             for (int j = -3, sj = sy + j; j <= 3; j++, sj++) {
                                 if((dist = i * i + j * j) > 9 || si < 0 || sj < 0 || si > xSize || sj > ySize) continue;
@@ -526,7 +528,7 @@ public class Renderer {
                         }
                     }
                     else if (Math.abs(shadeZ[fx][fy] - tz) <= limit) {
-                        float spread = MathUtils.lerp(0.005f, 0.002f, rough);
+                        float spread = MathUtils.lerp(0.005f, 0.002f, rough) * lightPower;
                         float dist;
                         for (int i = -3, si = sx + i; i <= 3; i++, si++) {
                             for (int j = -3, sj = sy + j; j <= 3; j++, sj++) {
@@ -537,14 +539,14 @@ public class Renderer {
                         }
                     }
                     if (emit > 0) {
-                        float spread = emit * 0.003f;
+                        float spread = emit * 0.003f * lightPower;
                         final int radius = 14;
                         for (int i = -radius, si = sx + i; i <= radius; i++, si++) {
                             for (int j = -radius, sj = sy + j; j <= radius; j++, sj++) {
                                 final int dist = i * i + j * j;
                                 if(dist > radius * radius || si < 0 || sj < 0 || si > xSize || sj > ySize) continue;
                                 float change = spread * (radius - (float) Math.sqrt(dist));
-                                midShading[si][sj] = Math.min(midShading[si][sj] + change, 0.3f);
+                                midShading[si][sj] = Math.min(midShading[si][sj] + change, 0.3f * lightPower);
                             }
                         }
                     }
@@ -555,7 +557,7 @@ public class Renderer {
             for (int y = ySize; y >= 0; y--) {
                 if (colorA[x][y] >= 0f) {
                     pixmap.drawPixel(x >>> shrink, y >>> shrink, ColorTools.toRGBA8888(ColorTools.oklab(
-                            Math.min(Math.max(colorL[x][y] - 0.1f + midShading[x][y], 0f), 1f),
+                            Math.min(Math.max(colorL[x][y] - 0.1f * lightPower + midShading[x][y], 0f), 1f),
                                                         (colorA[x][y] - 0.5f) * neutral + 0.5f,
                             (colorB[x][y] - 0.5f) * neutral + 0.5f, 1f)));
                 }

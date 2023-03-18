@@ -23,6 +23,9 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-S", "--saturation"}, description = "A modifier that affects how saturated colors will be; 0 is unchanged, 0.5 is super-bold, and -1 is grayscale.", defaultValue = "0")
 	public float saturation = 0;
 
+	@CommandLine.Option(names = {"-L", "--lightness"}, description = "A multiplier that affects how much shading changes pixel colors; 0 is unchanged, 2.0 is high-contrast, and -1 is no-shading.", defaultValue = "-1.0")
+	public float lightPower = 0;
+
 	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: none, partial, light, heavy, block.", defaultValue = "light")
 	public String edge = "light";
 
@@ -117,7 +120,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 
 			int nameStart = Math.max(input.lastIndexOf('/'), input.lastIndexOf('\\')) + 1;
 			this.input = input.substring(nameStart, input.indexOf('.', nameStart));
-			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations, distortHXY, distortVXY, distortVZ, normals), configuration){
+			new HeadlessApplication(new SpotVox(input, size, voxels, multiple, edge, saturation, turn, rotations, distortHXY, distortVXY, distortVZ, normals, lightPower), configuration){
 				{
 					try {
 						mainLoopThread.join();
