@@ -33,14 +33,10 @@ public class SpotVox extends ApplicationAdapter {
     public float yaw, pitch, roll;
 
 
-    // This block is a fixed version of the initialization for UIUtils; it works om GraalVM.
+    // This block is a fixed version of the initialization for UIUtils; it works on GraalVM.
     // This is a solution for https://github.com/libgdx/libgdx/issues/7111
-    static private String osName = System.getProperty("os.name");
-    static private String jrName = System.getProperty("java.runtime.name");
-    static {
-        if(osName == null) osName = "";
-        if(jrName == null) jrName = "";
-    }
+    static private final String osName = System.getProperty("os.name", "");
+    static private final String jrName = System.getProperty("java.runtime.name", "");
     static public boolean isAndroid = jrName.contains("Android");
     static public boolean isMac = !isAndroid && osName.contains("Mac");
     static public boolean isWindows = !isAndroid && osName.contains("Windows");
