@@ -161,14 +161,13 @@ public class Renderer {
     }
     private final Vector3 out = new Vector3();
     /**
-     * Applies a Sobel filter to a given x,y point in the already-computed depths 2D array, returning an RGBA8888 color
-     * representing a normal. The blue channel of the color represents the axis of the normal vector that points toward
-     * the camera, the green channel up, and the red channel right.
+     * Applies a Scharr filter (not actually Sobel) to a given x,y point in the already-computed depths 2D array,
+     * assigning floats to {@link #normalMap}. The blue channel of the color represents the axis of the normal vector
+     * that points toward the camera, the green channel up, and the red channel right.
      * <a href="https://forum.unity.com/threads/sobel-operator-height-to-normal-map-on-gpu.33159/">Thanks to apple_motion for writing the initial basis for this</a>,
      * and <a href="https://gamedev.stackexchange.com/q/165575">Jarrett on the game dev StackExchange for providing a working solution.</a>
      * @param x x position in depths
      * @param y y position in depths
-     * @return an RGBA8888 color representing a normal where blue points at the camera, green points up, and red points right
      */
     public void sobel(int x, int y) {
         if(colorL[x][y] == -1) return;
@@ -259,11 +258,7 @@ public class Renderer {
         float cy = ((tl + tr - bl - br) * 47 + (t - b) * 162);
         float cz = 12f; // float strength = 256f/16f;
 
-//        out.set(cx, cy, cz);
-//        System.out.println(out);
-//        return Color.rgba8888(Math.min(Math.max(out.x * 0.5f + 0.5f,0),1), Math.min(Math.max(out.y * 0.5f + 0.5f,0),1), out.z * 0.5f + 0.5f, 1f);
         out.set(cx, cy, cz).nor();
-//        System.out.println(out);
         int color = Color.rgba8888(out.x * 0.5f + 0.5f, out.y * 0.5f + 0.5f, out.z * 0.5f + 0.5f, 1f);
         normalMap.setColor(color);
         int xx = x >>> shrink, yy = y >>> shrink;
@@ -282,38 +277,35 @@ public class Renderer {
      * the camera, the green channel up, and the red channel right.
      * <a href="https://forum.unity.com/threads/sobel-operator-height-to-normal-map-on-gpu.33159/">Thanks to apple_motion for writing the initial basis for this</a>,
      * and <a href="https://gamedev.stackexchange.com/q/165575">Jarrett on the game dev StackExchange for providing a working solution.</a>
-     * @param x x position in depths
-     * @param y y position in depths
-     * @return an RGBA8888 color representing a normal where blue points at the camera, green points up, and red points right
+     * @param x x position, looked up in depths
+     * @param y y position, looked up in depths
      */
     public void scharr(int x, int y) {
+        // if there is nothing here, don't bother computing anything.
         if(colorL[x][y] == -1) return;
         int[][] data = this.depths;
+        // for other usage, this calculation will have to be different.
         float maxDepth = 1.5f * (0.5f + (size + size) * distortHXY + size * distortVZ);
-//        float maxDepth = size;
         float invMaxDepth = 1f / maxDepth;
+        // how many pixels away from (x,y) each direction will move per step.
         final int u = 1 << shrink;
 
-        float tl = (x < u || y < u) ? 0 : (data[x-u][y-u]>>>0) * invMaxDepth;                    // top left
-        float  l = (x < u) ? 0 : (data[x-u][y]>>>0) * invMaxDepth;                               // left
-        float bl = (x < u || y >= data[0].length - u) ? 0 : (data[x-u][y+u]>>>0) * invMaxDepth;  // bottom left
-        float  t = (y < u) ? 0 : (data[x][y-u]>>>0) * invMaxDepth;                               // top
-        float  b = (data[x][y]>>>0) * invMaxDepth;                                               // bottom
-        float tr = (y >= data[0].length - u) ? 0 : (data[x][y+u]>>>0) * invMaxDepth;             // top right
-        float  r = (x >= data.length - u || y < u) ? 0 : (data[x+u][y-u]>>>0) * invMaxDepth;     // right
-        float br = (x >= data.length - u) ? 0 : (data[x+u][y]>>>0) * invMaxDepth;                // bottom right
+        float tl = (x < u || y < u) ? 0 : (data[x-u][y-u]) * invMaxDepth;                    // top left
+        float  l = (x < u) ? 0 : (data[x-u][y]) * invMaxDepth;                               // left
+        float bl = (x < u || y >= data[0].length - u) ? 0 : (data[x-u][y+u]) * invMaxDepth;  // bottom left
+        float  t = (y < u) ? 0 : (data[x][y-u]) * invMaxDepth;                               // top
+        float  b = (data[x][y]) * invMaxDepth;                                               // bottom
+        float tr = (y >= data[0].length - u) ? 0 : (data[x][y+u]) * invMaxDepth;             // top right
+        float  r = (x >= data.length - u || y < u) ? 0 : (data[x+u][y-u]) * invMaxDepth;     // right
+        float br = (x >= data.length - u) ? 0 : (data[x+u][y]) * invMaxDepth;                // bottom right
 
         // Scharr operator
         float cx = ((tl + bl - tr - br) * 47 + (l - r) * 162);
         float cy = ((tl + tr - bl - br) * 47 + (t - b) * 162);
-        float cz = 12f; // float strength = 256f/16f;
+        float cz = 12f; // adjustable
 
-//        out.set(cx, cy, cz);
-//        System.out.println(out);
-//        return Color.rgba8888(Math.min(Math.max(out.x * 0.5f + 0.5f,0),1), Math.min(Math.max(out.y * 0.5f + 0.5f,0),1), out.z * 0.5f + 0.5f, 1f);
         out.set(cx, cy, cz).nor().scl(0.5f).add(0.5f);
-//        System.out.println(out);
-        int xx = x >>> shrink, yy = y >>> shrink, w = pixmap.getWidth(), i = xx + yy * w;
+        int xx = x >>> shrink, yy = y >>> shrink, w = pixmap.getWidth(), h = pixmap.getHeight(), i = xx + yy * w;
         normals[0][i] = out.x;
         normals[1][i] = out.y;
         normals[2][i] = out.z;
@@ -322,7 +314,7 @@ public class Renderer {
         for (int px = -4, ax = xx + px; px <= 4; px++, ax++) {
             if(ax >= 0 && ax < w) {
                 for (int py = -4, ay = yy + py; py <= 4; py++, ay++) {
-                    if(ay >= 0 && ay < pixmap.getHeight() && normals[3][i = ax + ay * w] == 0f){
+                    if(ay >= 0 && ay < h && normals[3][i = ax + ay * w] == 0f){
                         normals[0][i] = out.x;
                         normals[1][i] = out.y;
                         normals[2][i] = out.z;
@@ -330,18 +322,10 @@ public class Renderer {
                 }
             }
         }
-
-//        if(xx >= 1 && normals[3][i-1] == 0f){
-//            normals[0][i-1] = out.x;
-//            normals[1][i-1] = out.y;
-//            normals[2][i-1] = out.z;
-//            normals[3][i-1] = 1f;
-//        }
     }
 
     public int depth(int x, int y) {
         float maxDepth = 1.5f * (0.5f + (size + size) * distortHXY + size * distortVZ);
-//        float depth = (int)(0.5f + (xPos + yPos) * distortHXY + zPos * distortVZ);
         float gray = depths[x][y] / maxDepth;
 //        if(gray > 1f) System.out.println(x + ", " + y + ": depth " + depths[x][y] + ", maxDepth " + maxDepth);
         return Color.rgba8888(gray, gray, gray, 1f);

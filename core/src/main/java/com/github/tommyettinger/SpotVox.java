@@ -32,29 +32,11 @@ public class SpotVox extends ApplicationAdapter {
     public float baseLight;
     public float yaw, pitch, roll;
 
-
-    // This block is a fixed version of the initialization for UIUtils; it works on GraalVM.
-    // This is a solution for https://github.com/libgdx/libgdx/issues/7111
-    static private final String osName = System.getProperty("os.name", "");
-    static private final String jrName = System.getProperty("java.runtime.name", "");
-    static public boolean isAndroid = jrName.contains("Android");
-    static public boolean isMac = !isAndroid && osName.contains("Mac");
-    static public boolean isWindows = !isAndroid && osName.contains("Windows");
-    static public boolean isLinux = !isAndroid && osName.contains("Linux")
-            || osName.contains("FreeBSD");
-    static public boolean isIos = !isAndroid && (!(isWindows || isLinux || isMac));
-    // End of UIUtils block.
-
-
-
     public SpotVox() {
     }
     public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps,
                    int rotations, float yaw, float pitch, float roll, float distortHXY, float distortVXY,
                    float distortVZ, double normals, float lightPower, float baseLight) {
-        // If you're on Windows, this prints a dumb tagline. This is for https://github.com/libgdx/libgdx/issues/7111
-        if(isWindows)
-            System.out.println("Dude, you're getting a Dell!");
         this.name = name;
         this.voxels = voxels;
         this.size = size;
