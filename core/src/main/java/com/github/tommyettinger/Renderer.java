@@ -3,7 +3,6 @@ package com.github.tommyettinger;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector3;
 import com.github.tommyettinger.colorful.oklab.ColorTools;
 import com.github.tommyettinger.digital.ArrayTools;
@@ -21,16 +20,11 @@ import static com.github.tommyettinger.digital.ArrayTools.fill;
  */
 public class Renderer {
     public Pixmap pixmap;
-    public Pixmap normalMap;
-    public boolean computeNormals;
-    public double blurSigma = 0.9;
-    public GaussianBlur blur;
     public int[][] depths;
     public int[][] voxels;
     public int[][] outlines;
     public VoxMaterial[][] materials;
     public float[][] shadeX, shadeZ, colorL, colorA, colorB, midShading;
-    public float[][] normals;
     public int[] palette;
     public float[] paletteL, paletteA, paletteB;
     public int outline = 2;
@@ -41,21 +35,14 @@ public class Renderer {
     public float baseLight = 0f;
     public IntObjectMap<VoxMaterial> materialMap;
 
-    public float distortHXY = 2, distoryVXY = 1, distortVZ = 3;
+    public float distortHXY = 2, distortVXY = 1, distortVZ = 3;
 
-    private final Matrix3 inputMatrix = new Matrix3();
-    private final float[] sobelXArray = new float[]{
-            +1.0f, +0.0f, -1.0f,
-            +2.0f, +0.0f, -2.0f,
-            +1.0f, +0.0f, -1.0f
-    };
-    private final float[] sobelYArray = new float[]{
-            +1.0f, +2.0f, +1.0f,
-            +0.0f, +0.0f, +0.0f,
-            -1.0f, -2.0f, -1.0f
-    };
-    private final Matrix3 sobelXMatrix = new Matrix3(sobelXArray);
-    private final Matrix3 sobelYMatrix = new Matrix3(sobelYArray);
+    public Pixmap normalMap;
+    public boolean computeNormals;
+    public double blurSigma = 0.9;
+    public GaussianBlur blur;
+    public float[][] normals;
+    private final Vector3 out = new Vector3();
 
     protected Renderer() {
 
@@ -65,7 +52,7 @@ public class Renderer {
     }
 
     public void init(){
-        final int w = (int)Math.ceil(size * distortHXY * 2 + 4), h = (int)Math.ceil(size * (distortVZ + distoryVXY * 2) + 4);
+        final int w = (int)Math.ceil(size * distortHXY * 2 + 4), h = (int)Math.ceil(size * (distortVZ + distortVXY * 2) + 4);
         pixmap = new Pixmap(w>>>shrink, h>>>shrink, Pixmap.Format.RGBA8888);
         if(computeNormals)
         {
@@ -159,7 +146,6 @@ public class Renderer {
     public static void pixelDraw(Pixmap pm, int x, int y, int color) {
         pm.drawPixel(x, pm.getHeight() - 1 - y, color);
     }
-    private final Vector3 out = new Vector3();
     /**
      * Applies a Scharr filter (not actually Sobel) to a given x,y point in the already-computed depths 2D array,
      * assigning floats to {@link #normalMap}. The blue channel of the color represents the axis of the normal vector
@@ -378,7 +364,7 @@ public class Renderer {
             return;
         final int 
                 xx = (int)(0.5f + Math.max(0, (size + yPos - xPos) * distortHXY + 1)),
-                yy = (int)(0.5f + Math.max(0, (zPos * distortVZ + size * ((distoryVXY) * 3) - distoryVXY * (xPos + yPos)) + 1)),
+                yy = (int)(0.5f + Math.max(0, (zPos * distortVZ + size * ((distortVXY) * 3) - distortVXY * (xPos + yPos)) + 1)),
                 depth = (int)(0.5f + (xPos + yPos) * distortHXY + zPos * distortVZ);
         boolean drawn = false;
         final VoxMaterial m = materialMap.get(voxel & 255);

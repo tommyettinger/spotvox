@@ -1,7 +1,5 @@
 package com.github.tommyettinger;
 
-import java.util.Arrays;
-
 /**
  * A small utility class to apply Gaussian blur to an array of data, usually representing a 2D field of
  * different lightness values. This is from

@@ -12,7 +12,7 @@ import com.github.tommyettinger.anim8.FastPalette;
 import com.github.tommyettinger.io.VoxIOExtended;
 
 public class SpotVox extends ApplicationAdapter {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public Renderer renderer;
     public String name;
     public byte[][][] voxels;
@@ -79,7 +79,7 @@ public class SpotVox extends ApplicationAdapter {
         renderer = new Renderer(size);
         renderer.palette(VoxIOExtended.lastPalette);
         renderer.distortHXY = distortHXY;
-        renderer.distoryVXY = distortVXY;
+        renderer.distortVXY = distortVXY;
         renderer.distortVZ = distortVZ;
         renderer.computeNormals = normals;
         renderer.blurSigma = normalSigma;
@@ -91,7 +91,7 @@ public class SpotVox extends ApplicationAdapter {
         png = new FastPNG();
         gif = new FastGif();
         gif.palette = new FastPalette();
-        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.ROBERTS);
+        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.DODGY);
         gif.setDitherStrength(0.25f);
         Pixmap pixmap;
         boolean smoothing = multiple > 0;
@@ -112,7 +112,7 @@ public class SpotVox extends ApplicationAdapter {
                     p.drawPixmap(pixmap, 0, 0);
                     pm.add(p);
                 }
-                gif.palette.analyze(pm, 75.0, 256);
+                gif.palette.analyze(pm, 50.0, 256);
                 gif.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_Turntable.gif"), pm, fps);
                 for (Pixmap pix : pm) {
                     if (!pix.isDisposed())
@@ -135,7 +135,7 @@ public class SpotVox extends ApplicationAdapter {
                 renderer = new Renderer(size <<= 1);
                 renderer.palette(VoxIOExtended.lastPalette);
                 renderer.distortHXY = distortHXY;
-                renderer.distoryVXY = distortVXY;
+                renderer.distortVXY = distortVXY;
                 renderer.distortVZ = distortVZ;
                 renderer.computeNormals = normals;
                 renderer.blurSigma = normalSigma;

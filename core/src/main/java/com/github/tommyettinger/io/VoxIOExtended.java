@@ -5,12 +5,12 @@ import com.github.tommyettinger.LittleEndianDataInputStream;
 import com.github.tommyettinger.Tools3D;
 import com.github.tommyettinger.VoxMaterial;
 import com.github.tommyettinger.ds.IntObjectMap;
+import com.github.tommyettinger.ds.support.util.IntIterator;
 import com.github.yellowstonegames.core.StringTools;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.PrimitiveIterator;
 
 
 /**
@@ -380,7 +380,7 @@ public class VoxIOExtended {
                     String term = ent.value.type.name();
                     writeInt(dos, term.length());
                     dos.writeBytes(term);
-                    PrimitiveIterator.OfInt it = ent.value.traits.keySet().iterator();
+                    IntIterator it = ent.value.traits.keySet().iterator();
                     for(int k; it.hasNext();) {
                         k = it.nextInt();
                         if(k > 9) continue;
