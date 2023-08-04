@@ -17,11 +17,15 @@ dependencies {
 	generateConfig 'info.picocli:picocli-codegen:4.7.4'
 }
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !! You will probably need to run the jar task twice to ensure generated files are in-place! !!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 tasks.register('generateGraalReflectionConfig', JavaExec) {
 	dependsOn 'classes'
 	mainClass = 'picocli.codegen.aot.graalvm.ReflectionConfigGenerator'
 	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
-	def outputFile = "${buildDir}/resources/main/META-INF/native-image/${project.group}/${project.name}/reflect-config.json"
+	def outputFile = "${projectDir}/src/main/resources/META-INF/native-image/${project.group}/reflect-config.json"
 	args = ["--output=$outputFile", 'com.github.tommyettinger.headless.HeadlessLauncher']
 }
 jar.dependsOn generateGraalReflectionConfig
@@ -30,7 +34,7 @@ tasks.register('generateGraalResourceConfig', JavaExec) {
 	dependsOn 'classes'
 	mainClass = 'picocli.codegen.aot.graalvm.ResourceConfigGenerator'
 	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
-	def outputFile = "${buildDir}/resources/main/META-INF/native-image/${project.group}/${project.name}/resource-config.json"
+	def outputFile = "${projectDir}/src/main/resources/META-INF/native-image/${project.group}/resource-config.json"
 	args = ["--output=$outputFile", "--pattern=\"\\\\Qgdx64.dll\\\\E\"", 'com.github.tommyettinger.headless.HeadlessLauncher']
 }
 jar.dependsOn generateGraalResourceConfig
@@ -39,7 +43,7 @@ tasks.register('generateGraalDynamicProxyConfig', JavaExec) {
 	dependsOn 'classes'
 	mainClass = 'picocli.codegen.aot.graalvm.DynamicProxyConfigGenerator'
 	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
-	def outputFile = "${buildDir}/resources/main/META-INF/native-image/${project.group}/${project.name}/proxy-config.json"
+	def outputFile = "${projectDir}/src/main/resources/META-INF/native-image/${project.group}/proxy-config.json"
 	args = ["--output=$outputFile", 'com.github.tommyettinger.headless.HeadlessLauncher']
 }
 jar.dependsOn generateGraalDynamicProxyConfig
