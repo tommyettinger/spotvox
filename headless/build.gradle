@@ -4,11 +4,45 @@ sourceCompatibility = 1.8
 mainClassName = 'com.github.tommyettinger.headless.HeadlessLauncher'
 eclipse.project.name = appName + '-headless'
 
+
+configurations {
+	generateConfig
+}
+
 dependencies {
 	implementation project(':core')
 	implementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
 	implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+	implementation 'info.picocli:picocli:4.7.4'
+	generateConfig 'info.picocli:picocli-codegen:4.7.4'
 }
+
+tasks.register('generateGraalReflectionConfig', JavaExec) {
+	dependsOn 'classes'
+	mainClass = 'picocli.codegen.aot.graalvm.ReflectionConfigGenerator'
+	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
+	def outputFile = "${buildDir}/resources/main/META-INF/native-image/${project.group}/${project.name}/reflect-config.json"
+	args = ["--output=$outputFile", 'com.github.tommyettinger.headless.HeadlessLauncher']
+}
+jar.dependsOn generateGraalReflectionConfig
+
+tasks.register('generateGraalResourceConfig', JavaExec) {
+	dependsOn 'classes'
+	mainClass = 'picocli.codegen.aot.graalvm.ResourceConfigGenerator'
+	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
+	def outputFile = "${buildDir}/resources/main/META-INF/native-image/${project.group}/${project.name}/resource-config.json"
+	args = ["--output=$outputFile", "--pattern=\"\\\\Qgdx64.dll\\\\E\"", 'com.github.tommyettinger.headless.HeadlessLauncher']
+}
+jar.dependsOn generateGraalResourceConfig
+
+tasks.register('generateGraalDynamicProxyConfig', JavaExec) {
+	dependsOn 'classes'
+	mainClass = 'picocli.codegen.aot.graalvm.DynamicProxyConfigGenerator'
+	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
+	def outputFile = "${buildDir}/resources/main/META-INF/native-image/${project.group}/${project.name}/proxy-config.json"
+	args = ["--output=$outputFile", 'com.github.tommyettinger.headless.HeadlessLauncher']
+}
+jar.dependsOn generateGraalDynamicProxyConfig
 
 jar {
 	archiveFileName.set(appName+".jar")
