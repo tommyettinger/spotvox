@@ -89,6 +89,7 @@ public class SpotVox extends ApplicationAdapter {
         renderer.outline = outline;
         renderer.saturation(saturation);
         png = new FastPNG();
+        png.setFlipY(true);
         gif = new FastGif();
         gif.palette = new FastPalette();
         gif.setDitherAlgorithm(Dithered.DitherAlgorithm.DODGY);

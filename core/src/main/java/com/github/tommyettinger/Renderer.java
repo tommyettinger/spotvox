@@ -141,10 +141,10 @@ public class Renderer {
 //    }
 
     public static void pixelDraw(Pixmap pm, int x, int y) {
-        pm.drawPixel(x, pm.getHeight() - 1 - y);
+        pm.drawPixel(x, y);
     }
     public static void pixelDraw(Pixmap pm, int x, int y, int color) {
-        pm.drawPixel(x, pm.getHeight() - 1 - y, color);
+        pm.drawPixel(x, y, color);
     }
     /**
      * Applies a Scharr filter (not actually Sobel) to a given x,y point in the already-computed depths 2D array,
