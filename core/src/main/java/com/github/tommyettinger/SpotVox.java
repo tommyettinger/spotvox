@@ -5,10 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.github.tommyettinger.anim8.Dithered;
-import com.github.tommyettinger.anim8.FastGif;
-import com.github.tommyettinger.anim8.FastPNG;
-import com.github.tommyettinger.anim8.FastPalette;
+import com.github.tommyettinger.anim8.*;
 import com.github.tommyettinger.io.VoxIOExtended;
 
 public class SpotVox extends ApplicationAdapter {
@@ -31,12 +28,13 @@ public class SpotVox extends ApplicationAdapter {
     public float lightPower;
     public float baseLight;
     public float yaw, pitch, roll;
+    public int expand;
 
     public SpotVox() {
     }
     public SpotVox(String name, int size, byte[][][] voxels, int multiple, String edge, float saturation, int fps,
                    int rotations, float yaw, float pitch, float roll, float distortHXY, float distortVXY,
-                   float distortVZ, double normals, float lightPower, float baseLight) {
+                   float distortVZ, double normals, float lightPower, float baseLight, int expand) {
         this.name = name;
         this.voxels = voxels;
         this.size = size;
@@ -54,6 +52,7 @@ public class SpotVox extends ApplicationAdapter {
         this.normalSigma = normals;
         this.lightPower = lightPower + 1f;
         this.baseLight = baseLight;
+        this.expand = expand;
         iRotations = 1f / this.rotations;
         switch (edge) {
             case "none":
@@ -91,13 +90,14 @@ public class SpotVox extends ApplicationAdapter {
         png = new FastPNG();
         png.setFlipY(true);
         gif = new FastGif();
-        gif.palette = new FastPalette();
-        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.DODGY);
+        gif.palette = new QualityPalette();
+        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.OCEANIC);
         gif.setDitherStrength(0.25f);
         Pixmap pixmap;
         boolean smoothing = multiple > 0;
         multiple = Math.abs(multiple);
         for (int m = 0, exp = 1; m < multiple; m++, exp += exp) {
+            renderer.expand = (expand + 3) * exp;
             for (int i = 0; i < rotations; i++) {
                 pixmap = renderer.drawSplats(voxels, i * iRotations + yaw, pitch, roll, 0, 0, 0, VoxIOExtended.lastMaterials);
                 png.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_angle" + i + ".png"), pixmap);
@@ -113,7 +113,7 @@ public class SpotVox extends ApplicationAdapter {
                     p.drawPixmap(pixmap, 0, 0);
                     pm.add(p);
                 }
-                gif.palette.analyze(pm, 50.0, 256);
+                gif.palette.analyze(pm);
                 gif.write(Gdx.files.local((DEBUG ? "out/" + name : name) + "/size" + exp + (smoothing ? "smooth/" : "blocky/") + name + "_Turntable.gif"), pm, fps);
                 for (Pixmap pix : pm) {
                     if (!pix.isDisposed())
