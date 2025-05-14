@@ -18,14 +18,14 @@ allprojects {
 
 configure(subprojects) {
 	apply plugin: 'java-library'
-	sourceCompatibility = 1.8
+	sourceCompatibility = 17
 	compileJava {
 		options.incremental = true
 	}
 }
 
 subprojects {
-	version = '0.0.8-SNAPSHOT'
+	version = '0.0.7'
 	ext.appName = 'spotvox'
 	repositories {
 		mavenCentral()
