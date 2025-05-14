@@ -62,7 +62,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-R", "--roll"}, description = "Added to the roll rotation, in degrees. May be a decimal.", defaultValue = "0")
 	public float roll = 0;
 
-	@CommandLine.Option(names = {"-x", "--expand"}, description = "Added to the radius of shadows, in pixels. Must be a non-negative integer.", defaultValue = "0")
+	@CommandLine.Option(names = {"-x", "--expand"}, description = "How far soft lighting should expand into unlit areas, in voxels. Must be a non-negative integer.", defaultValue = "0")
 	public int expand = 0;
 
 	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Eye-Tyrant.vox")

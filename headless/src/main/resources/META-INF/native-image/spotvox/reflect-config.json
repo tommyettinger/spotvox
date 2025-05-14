@@ -11,6 +11,7 @@
       { "name" : "distortVXY" },
       { "name" : "distortVZ" },
       { "name" : "edge" },
+      { "name" : "expand" },
       { "name" : "input" },
       { "name" : "lightPower" },
       { "name" : "multiple" },
