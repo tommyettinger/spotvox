@@ -10,4 +10,4 @@ dependencies {
     api "com.github.tommyettinger:colorful:$colorfulVersion"
 }
 
-//compileJava.options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+compileJava.options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]

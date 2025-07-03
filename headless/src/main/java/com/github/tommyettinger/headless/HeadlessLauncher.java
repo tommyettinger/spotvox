@@ -12,7 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.7",
+@CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.8-SNAPSHOT",
 		description = "Given a .vox file, write pixel art renders to a subfolder.",
 		mixinStandardHelpOptions = true)
 public class HeadlessLauncher implements Callable<Integer> {

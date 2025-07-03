@@ -71,5 +71,13 @@ Spotvox is the successor to [IsoVoxel](https://github.com/tommyettinger/IsoVoxel
 recently that it could really use some better/more consistent color handling, as well as support for materials.
 
 # Notes
+
+Build a Graal Native Image exe by finding the GraalVM 24 bin folder and using its native-image:
+
+`native-image.cmd -cp picocli-4.7.7.jar --enable-native-access=ALL-UNNAMED -jar spotvox.jar`
+
+## Old Notes
+
 To build the native EXE, I drop spotvox.jar into `graalvm-env/`, run the appropriate Visual
 Studio variable setter (`vcvars64.bat`), then `build_native.bat`. This is all ByerN's work, big thanks!
+

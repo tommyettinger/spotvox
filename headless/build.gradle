@@ -5,48 +5,49 @@ mainClassName = 'com.github.tommyettinger.headless.HeadlessLauncher'
 eclipse.project.name = appName + '-headless'
 
 
-configurations {
-	generateConfig
-}
+//configurations {
+//	generateConfig
+//}
 
 dependencies {
 	implementation project(':core')
 	implementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
 	implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-	implementation 'info.picocli:picocli:4.7.4'
-	generateConfig 'info.picocli:picocli-codegen:4.7.4'
+	implementation 'info.picocli:picocli:4.7.7'
+	annotationProcessor 'info.picocli:picocli-codegen:4.7.7'
 }
+compileJava.options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !! You will probably need to run the jar task twice to ensure generated files are in-place! !!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-tasks.register('generateGraalReflectionConfig', JavaExec) {
-	dependsOn 'classes'
-	mainClass = 'picocli.codegen.aot.graalvm.ReflectionConfigGenerator'
-	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
-	def outputFile = "${projectDir}/src/main/resources/META-INF/native-image/${project.group}/reflect-config.json"
-	args = ["--output=$outputFile", 'com.github.tommyettinger.headless.HeadlessLauncher']
-}
-jar.dependsOn generateGraalReflectionConfig
-
-tasks.register('generateGraalResourceConfig', JavaExec) {
-	dependsOn 'classes'
-	mainClass = 'picocli.codegen.aot.graalvm.ResourceConfigGenerator'
-	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
-	def outputFile = "${projectDir}/src/main/resources/META-INF/native-image/${project.group}/resource-config.json"
-	args = ["--output=$outputFile", "--pattern=\"\\\\Qgdx64.dll\\\\E\"", 'com.github.tommyettinger.headless.HeadlessLauncher']
-}
-jar.dependsOn generateGraalResourceConfig
-
-tasks.register('generateGraalDynamicProxyConfig', JavaExec) {
-	dependsOn 'classes'
-	mainClass = 'picocli.codegen.aot.graalvm.DynamicProxyConfigGenerator'
-	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
-	def outputFile = "${projectDir}/src/main/resources/META-INF/native-image/${project.group}/proxy-config.json"
-	args = ["--output=$outputFile", 'com.github.tommyettinger.headless.HeadlessLauncher']
-}
-jar.dependsOn generateGraalDynamicProxyConfig
+//tasks.register('generateGraalReflectionConfig', JavaExec) {
+//	dependsOn 'classes'
+//	mainClass = 'picocli.codegen.aot.graalvm.ReflectionConfigGenerator'
+//	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
+//	def outputFile = "${projectDir}/src/main/resources/META-INF/native-image/${project.group}/reflect-config.json"
+//	args = ["--output=$outputFile", 'com.github.tommyettinger.headless.HeadlessLauncher']
+//}
+//jar.dependsOn generateGraalReflectionConfig
+//
+//tasks.register('generateGraalResourceConfig', JavaExec) {
+//	dependsOn 'classes'
+//	mainClass = 'picocli.codegen.aot.graalvm.ResourceConfigGenerator'
+//	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
+//	def outputFile = "${projectDir}/src/main/resources/META-INF/native-image/${project.group}/resource-config.json"
+//	args = ["--output=$outputFile", "--pattern=\"\\\\Qgdx64.dll\\\\E\"", 'com.github.tommyettinger.headless.HeadlessLauncher']
+//}
+//jar.dependsOn generateGraalResourceConfig
+//
+//tasks.register('generateGraalDynamicProxyConfig', JavaExec) {
+//	dependsOn 'classes'
+//	mainClass = 'picocli.codegen.aot.graalvm.DynamicProxyConfigGenerator'
+//	classpath = configurations.generateConfig + sourceSets.main.runtimeClasspath
+//	def outputFile = "${projectDir}/src/main/resources/META-INF/native-image/${project.group}/proxy-config.json"
+//	args = ["--output=$outputFile", 'com.github.tommyettinger.headless.HeadlessLauncher']
+//}
+//jar.dependsOn generateGraalDynamicProxyConfig
 
 jar {
 	archiveFileName.set(appName+".jar")
@@ -54,7 +55,9 @@ jar {
 	dependsOn configurations.runtimeClasspath
 	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 	manifest {
-		attributes 'Main-Class': project.mainClassName
+		attributes (
+			'Main-Class' : project.mainClassName, 'Enable-Native-Access': 'ALL-UNNAMED'
+		)
 	}
 	doLast {
 		file(archiveFile).setExecutable(true, false)
