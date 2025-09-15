@@ -9,7 +9,7 @@ import com.github.tommyettinger.anim8.*;
 import com.github.tommyettinger.io.VoxIOExtended;
 
 public class SpotVox extends ApplicationAdapter {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public Renderer renderer;
     public String name;
     public byte[][][] voxels;
@@ -91,7 +91,7 @@ public class SpotVox extends ApplicationAdapter {
         png.setFlipY(true);
         gif = new FastGif();
         gif.palette = new QualityPalette();
-        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.OCEANIC);
+        gif.setDitherAlgorithm(Dithered.DitherAlgorithm.MARTEN);
         gif.setDitherStrength(0.25f);
         Pixmap pixmap;
         boolean smoothing = multiple > 0;

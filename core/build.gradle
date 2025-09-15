@@ -2,9 +2,10 @@
 eclipse.project.name = appName + '-core'
 
 dependencies {
-	api "com.badlogicgames.gdx:gdx:$gdxVersion"
-    api "com.github.yellowstonegames.SquidSquad:squidcore:$squidSquadVersion"
-    api "com.github.yellowstonegames.SquidSquad:squidgrid:$squidSquadVersion"
+	//noinspection GDXOutdatedVersionGradleGroovy
+    api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    api "com.squidpony:squidcore:$squidSquadVersion"
+    api "com.squidpony:squidgrid:$squidSquadVersion"
     api "com.github.tommyettinger:jdkgdxds:$jdkgdxdsVersion"
     api "com.github.tommyettinger:anim8-gdx:$anim8Version"
     api "com.github.tommyettinger:colorful:$colorfulVersion"

@@ -74,3 +74,5 @@ nb-configuration.xml
 /graalvm-env/*.build_artifacts.txt
 /graalvm-env/*.exe
 /temp
+
+/vox/Office*.vox

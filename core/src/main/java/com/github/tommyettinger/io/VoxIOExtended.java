@@ -164,8 +164,8 @@ public class VoxIOExtended {
             //int version = 
             stream.readInt();
             int sizeX = 16, sizeY = 16, size = 16, sizeZ = 16, offX = 0, offY = 0;
-            byte[] key = new byte[6]; // used for MaterialTrait
-            byte[] val = new byte[10]; // used for MaterialType and numbers
+            byte[] key = new byte[20]; // used for MaterialTrait
+            byte[] val = new byte[20]; // used for MaterialType and numbers
             // a MagicaVoxel .vox file starts with a 'magic' 4 character 'VOX ' identifier
             if (chunkId[0] == 'V' && chunkId[1] == 'O' && chunkId[2] == 'X' && chunkId[3] == ' ') {
                 while (stream.available() > 0) {
@@ -236,6 +236,9 @@ public class VoxIOExtended {
                             }
                             String ks = new String(key, 0, keyLen, StandardCharsets.ISO_8859_1);
                             String vs = new String(val, 0, valLen, StandardCharsets.ISO_8859_1);
+//                            if(keyLen > 6)
+//                                System.out.println("key length " + keyLen + " is large with key " + ks + " and value " + vs);
+
                             vm.putTrait(ks, vs);
                         }
                     } else if (chunkName.equals("nTRN")) {

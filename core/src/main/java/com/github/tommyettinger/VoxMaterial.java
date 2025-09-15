@@ -22,7 +22,9 @@ public class VoxMaterial {
 		//4
 		_blend("Blend"),
 		//5
-		_media("Cloud");
+		_media("Cloud"),
+		//5
+		_scatter("Scatter");
 		public String name;
 		MaterialType(String name){
 			this.name = name;
@@ -56,7 +58,9 @@ public class VoxMaterial {
 		//9 determines how much lighting affects the color of a surface
 		_rough("Roughness"),
 		//10 used in newer MV instead of a separate MaterialType
-		_type("Type")
+		_type("Type"),
+		//11 used in the newest MV instead of a separate MaterialType
+		_media_type("Media")
 		;
 		
 		public String name;
@@ -121,7 +125,7 @@ public class VoxMaterial {
 	public void putTrait(String trait, String value) {
 		try {
 			int ord = MaterialTrait.valueOf(trait).ordinal();
-			if ("_type".equals(trait)) {
+			if ("_type".equals(trait) || "_media_type".equals(trait)) {
 				int t = MaterialType.valueOf(value).ordinal();
 				traits.put(ord, t);
 				type = ALL_TYPES[t];

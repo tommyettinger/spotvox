@@ -376,7 +376,7 @@ public class Renderer {
         final float hs = size * 0.5f;
         for (int x = 0, ax = xx; x < 4 && ax < depths.length; x++, ax++) {
             for (int y = 0, ay = yy; y < 4 && ay < depths[0].length; y++, ay++) {
-                if ((alpha == 0f) && (depth > depths[ax][ay] || (depth == depths[ax][ay] && colorL[ax][ay] < paletteL[voxel & 255]))) {
+                if ((alpha < 0.5f) && (depth > depths[ax][ay] || (depth == depths[ax][ay] && colorL[ax][ay] < paletteL[voxel & 255]))) {
                     drawn = true;
                     colorL[ax][ay] = paletteL[voxel & 255];
                     colorA[ax][ay] = paletteA[voxel & 255];
