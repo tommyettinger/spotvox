@@ -9,7 +9,7 @@ import com.github.tommyettinger.anim8.*;
 import com.github.tommyettinger.io.VoxIOExtended;
 
 public class SpotVox extends ApplicationAdapter {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public Renderer renderer;
     public String name;
     public byte[][][] voxels;

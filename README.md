@@ -52,6 +52,8 @@ If you get errors loading some models, try loading them in the current MagicaVox
 way (like rotating 360 degrees), then saving before you load them again. Older formats of .vox model aren't read
 correctly at the moment.
 
+Version 0.0.7 might be triggering false positive reports (out of the blue) with Windows Defender, but 0.0.8 shouldn't.
+
 # Thanks
 This project uses the great [PicoCLI](https://picocli.info/) library for clean command-line handling.
 The Win64 native-image version would not be possible if not for ByerN's work

@@ -12,7 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.8-SNAPSHOT",
+@CommandLine.Command(name = "spotvox", version = "SpotVox 0.0.8",
 		description = "Given a .vox file, write pixel art renders to a subfolder.",
 		mixinStandardHelpOptions = true)
 public class HeadlessLauncher implements Callable<Integer> {
@@ -32,7 +32,7 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: none, partial, light, heavy, block.", defaultValue = "light")
 	public String edge = "light";
 
-	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "-3")
+	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "3")
 	public int multiple = 3;
 
 	@CommandLine.Option(names = {"-t", "--turn-fps"}, description = "If non-zero, this will output a turntable GIF with the given frames per second.", defaultValue = "0")
@@ -62,10 +62,10 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-R", "--roll"}, description = "Added to the roll rotation, in degrees. May be a decimal.", defaultValue = "0")
 	public float roll = 0;
 
-	@CommandLine.Option(names = {"-x", "--expand"}, description = "How far soft lighting should expand into unlit areas, in voxels. Must be a non-negative integer.", defaultValue = "4")
+	@CommandLine.Option(names = {"-x", "--expand"}, description = "How far soft lighting should expand into unlit areas, in voxels. Must be a non-negative integer.", defaultValue = "0")
 	public int expand = 0;
 
-	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Office1.vox")
+	@CommandLine.Parameters(description = "The absolute or relative path to a MagicaVoxel .vox file.", defaultValue = "Eye-Tyrant.vox")
 	public String input = "Eye-Tyrant.vox";
 
 	public static void main(String[] args) {
