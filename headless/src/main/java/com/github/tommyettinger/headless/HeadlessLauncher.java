@@ -29,8 +29,8 @@ public class HeadlessLauncher implements Callable<Integer> {
 	@CommandLine.Option(names = {"-b", "--base-light"}, description = "Will be added to the lightness for all voxels; can be negative or positive, and is typically between -0.5 and 0.5.", defaultValue = "0.0")
 	public float baseLight = 0;
 
-	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: none, partial, light, heavy, block.", defaultValue = "light")
-	public String edge = "light";
+	@CommandLine.Option(names = {"-e", "--edge"}, description = "How to shade the edges of voxels next to gaps or the background; one of: none, partial, light, heavy, block, wire.", defaultValue = "wire")
+	public String edge = "wire";
 
 	@CommandLine.Option(names = {"-m", "--multiple"}, description = "How many multiples the model should be scaled up to; if negative, this keeps the voxels as blocks, without smoothing.", defaultValue = "3")
 	public int multiple = 3;

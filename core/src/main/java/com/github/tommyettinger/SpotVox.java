@@ -67,6 +67,9 @@ public class SpotVox extends ApplicationAdapter {
             case "block":
                 outline = 4;
                 break;
+            case "wire":
+                outline = 5;
+                break;
             default:
                 outline = 2;
         }

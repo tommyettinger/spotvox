@@ -141,11 +141,11 @@ public class Renderer {
 //        return turns * (-0.775f - 0.225f * turns) * ((floor & 2L) - 1L);
 //    }
 
-    public static void pixelDraw(Pixmap pm, int x, int y) {
+    public void pixelDraw(Pixmap pm, int x, int y) {
         pm.drawPixel(x, y);
     }
-    public static void pixelDraw(Pixmap pm, int x, int y, int color) {
-        pm.drawPixel(x, y, color);
+    public void pixelDraw(Pixmap pm, int x, int y, int color) {
+        pm.drawPixel(x, y, outline < 5 ? color : 0x000000FF);
     }
     /**
      * Applies a Scharr filter (not actually Sobel) to a given x,y point in the already-computed depths 2D array,
@@ -546,6 +546,7 @@ public class Renderer {
         if (outline != 0) {
             int inner, outer = 0x000000FF;
             if(outline <= 1) outer = 0;
+            else if(outline >= 5) outer = -1; // white
             for (int x = step; x <= xSize - step; x+= step) {
 //                final int hx = x;
                 final int hx = x >>> shrink;
@@ -556,44 +557,43 @@ public class Renderer {
                     if (inner != 0) {
                         if(outline == 2) outer = inner;
                         depth = depths[x][y];
-                        if (outlines[x - step][y] == 0) {
-                            pixelDraw(pixmap, hx - 1, hy    , outer);
-                        }
-                        else if (depths[x - step][y] < depth - threshold) {
-                            pixelDraw(pixmap, hx - 1, hy    , inner);
-                        }
-                        if (outlines[x + step][y] == 0) {
-                            pixelDraw(pixmap, hx + 1, hy    , outer);
-                        }
-                        else if (depths[x + step][y] < depth - threshold) {
-                            pixelDraw(pixmap, hx + 1, hy    , inner);
-                        }
-                        if (outlines[x][y - step] == 0) {
-                            pixelDraw(pixmap, hx    , hy - 1, outer);
-                        }
-                        else if (depths[x][y - step] < depth - threshold) {
-                            pixelDraw(pixmap, hx    , hy - 1, inner);
-                        }
-                        if (outlines[x][y + step] == 0) {
-                            pixelDraw(pixmap, hx    , hy + 1, outer);
-                        }
-                        else if (depths[x][y + step] < depth - threshold) {
-                            pixelDraw(pixmap, hx    , hy + 1, inner);
+                        if(outline < 5) {
+                            if (outlines[x - step][y] == 0) {
+                                pixelDraw(pixmap, hx - 1, hy, outer);
+                            } else if (depths[x - step][y] < depth - threshold) {
+                                pixelDraw(pixmap, hx - 1, hy, inner);
+                            }
+                            if (outlines[x + step][y] == 0) {
+                                pixelDraw(pixmap, hx + 1, hy, outer);
+                            } else if (depths[x + step][y] < depth - threshold) {
+                                pixelDraw(pixmap, hx + 1, hy, inner);
+                            }
+                            if (outlines[x][y - step] == 0) {
+                                pixelDraw(pixmap, hx, hy - 1, outer);
+                            } else if (depths[x][y - step] < depth - threshold) {
+                                pixelDraw(pixmap, hx, hy - 1, inner);
+                            }
+                            if (outlines[x][y + step] == 0) {
+                                pixelDraw(pixmap, hx, hy + 1, outer);
+                            } else if (depths[x][y + step] < depth - threshold) {
+                                pixelDraw(pixmap, hx, hy + 1, inner);
+                            }
                         }
 
                         // block outline, applies to outer only
                         if(outline >= 4) {
+                            pixmap.setColor(outer);
                             if (outlines[x - step][y - step] == 0) {
-                                pixelDraw(pixmap, hx - 1, hy - 1, outer);
+                                pixelDraw(pixmap, hx - 1, hy - 1);
                             }
                             if (outlines[x + step][y - step] == 0) {
-                                pixelDraw(pixmap, hx + 1, hy - 1, outer);
+                                pixelDraw(pixmap, hx + 1, hy - 1);
                             }
                             if (outlines[x - step][y + step] == 0) {
-                                pixelDraw(pixmap, hx - 1, hy + 1, outer);
+                                pixelDraw(pixmap, hx - 1, hy + 1);
                             }
                             if (outlines[x + step][y + step] == 0) {
-                                pixelDraw(pixmap, hx + 1, hy + 1, outer);
+                                pixelDraw(pixmap, hx + 1, hy + 1);
                             }
                         }
                     }
