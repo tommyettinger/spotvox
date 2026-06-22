@@ -555,6 +555,7 @@ public class Renderer {
                     int hy = y >>> shrink;
                     inner = outlines[x][y];
                     if (inner != 0) {
+                        if(outline >= 2) inner = (inner >> 1 & 0x7F7F7F00) | 0xFF;
                         if(outline == 2) outer = inner;
                         depth = depths[x][y];
                         if(outline < 5) {
