@@ -32,27 +32,36 @@ Viewing these can be a good way to understand what the different edge types mean
 but "partial" only has outlines where part of the model extends out and over itself (and nothing is added over the
 empty pixels at the edge of the model). The "light" edge mode does what "partial" does but also draws up to 4 pixels in
 that empty space at the edge, in the same color as the interior edges. Then, "heavy" is like "light" but draws the
-exterior edge (over the empty space) in black. Lastly, "block" is like "heavy" but can draw up to 8 pixels over the
-empty space, producing slightly thicker outlines. One idea for these: You can use "block" or "heavy" for important or
-moving characters/objects, and use "light" or "partial" for background terrain/objects; this makes important things
-stand out from their surroundings.
+exterior edge (over the empty space) in black. Then, "block" is like "heavy" but can draw up to 8 pixels over the
+empty space, producing slightly thicker outlines. Lastly, "wire" produces assets with just black faces, white outlines,
+and everything else transparent; it can be useful for adding outer outlines in any color to "none" or "partial" renders.
+One idea for these: You can use "block" or "heavy" for important or moving characters/objects, and use "light" or
+"partial" for background terrain/objects; this makes important things stand out from their surroundings.
 
 # Usage
 Download a .zip file from the latest in the [Releases section](https://github.com/tommyettinger/spotvox/releases);
-use windows-x64 if you're on 64-bit Windows (most recent installations are 64-bit), or all-platforms if you aren't.
-Always extract the .zip, of course. On Windows you can drag and drop a .vox file into the .exe or .bat file. When using
-drag and drop, 3 sizes are created, with smoothing, and with light outlines; these go in a folder next to the .vox. On
-other platforms, use `java -jar spotvox.jar --help` from the command line (in the same folder as spotvox.jar) to see
+there's one release for all platforms now. Always extract the .zip, of course.
+
+On Windows you can drag and drop a .vox file into the .exe or .bat file. When using drag and drop, 3 sizes are created,
+with smoothing, and with light outlines; these go in a folder next to the .vox. You can drag and drop onto
+`spotvox-turntable.bat` to create a turn-table rotation GIF of each scale.
+
+On any platform, use `java -jar spotvox.jar --help` from the command line (in the same folder as spotvox.jar) to see
 usage. Using the command line gives various options, like using more or fewer scales (by default, this produces
 x1, x2, and x4 scales), changing the style of voxel edges/outlines, and positioning the .vox model in a different size
 of bounding box, so you can synchronize the sizing of different models' renders. The path to the .vox file to render
 always goes last. You can use the command line on any platform; if using windows-x64, use `spotvox.exe --help` instead.
 
+If you're using the command line on a non-Windows OS, you should install Java 17 or newer via your package manager (if
+you are on Linux) or via an OpenJDK vendor such as [Eclipse Adoptium](https://adoptium.net/temurin/releases/). That will
+make the `java` command available to run the above command, `java -jar spotvox.jar` .
+
 If you get errors loading some models, try loading them in the current MagicaVoxel, editing them in some non-destructive
 way (like rotating 360 degrees), then saving before you load them again. Older formats of .vox model aren't read
 correctly at the moment.
 
-Version 0.0.7 might be triggering false positive reports (out of the blue) with Windows Defender, but 0.0.8 shouldn't.
+Version 0.0.7 might be triggering false positive reports (out of the blue) with Windows Defender, but 0.0.8 and 0.0.9
+shouldn't.
 
 # Thanks
 This project uses the great [PicoCLI](https://picocli.info/) library for clean command-line handling.
